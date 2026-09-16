@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Warrigal Park FC | Add new member</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="#top">WPFC<span>Admin</span></a>
+        <nav>
+          <button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="member-management-menu">
+            Member Management
+          </button>
+          <div id="member-management-menu" class="nav-submenu">
+            <a class="nav-subitem active" href="index.html" aria-current="page">Add New Member</a>
+            <a class="nav-subitem" href="search.html">Search Members</a>
+          </div>
+        </nav>
+      </aside>
+
+      <main id="top" class="main-content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Warrigal Park Football Club</p>
+            <h1>Add new member</h1>
+          </div>
+          <div class="user-label">Registrar</div>
+        </header>
+
+        <div class="add-member-layout">
+          <section id="add-member" class="panel form-panel" aria-labelledby="add-member-heading">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Member Management</p>
+                <h2 id="add-member-heading">Add new member</h2>
+              </div>
+            </div>
+
+            <form id="add-member-form">
+              <div class="field-grid two-columns">
+                <div class="field">
+                  <label for="first-name">First name</label>
+                  <input id="first-name" name="firstName" type="text" autocomplete="given-name">
+                </div>
+                <div class="field">
+                  <label for="last-name">Last name</label>
+                  <input id="last-name" name="lastName" type="text" autocomplete="family-name">
+                </div>
+              </div>
+
+              <div class="field-grid two-columns">
+                <div class="field">
+                  <label for="date-of-birth">Date of birth</label>
+                  <input id="date-of-birth" name="dateOfBirth" type="date">
+                </div>
+                <div class="field">
+                  <label for="gender">Gender</label>
+                  <select id="gender" name="gender">
+                    <option value="" selected>Select gender (optional)</option>
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                    <option value="Non-binary">Non-binary</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field-grid two-columns">
+                <div class="field">
+                  <label for="phone">Phone</label>
+                  <input id="phone" name="phone" type="tel" autocomplete="tel">
+                </div>
+                <div class="field">
+                  <label for="email">Email</label>
+                  <input id="email" name="email" type="email" autocomplete="email">
+                </div>
+              </div>
+
+              <p id="form-message" class="form-message" aria-live="polite"></p>
+              <div class="form-actions">
+                <button class="secondary-button" type="reset">Clear form</button>
+                <button class="primary-button" type="submit">Save member</button>
+              </div>
+            </form>
+          </section>
+
+        </div>
+      </main>
+    </div>
+
+    <script src="../team/mockdata.js"></script>
+    <script src="../data.js"></script>
+    <script src="member.js"></script>
+  </body>
+</html>
