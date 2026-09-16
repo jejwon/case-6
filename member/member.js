@@ -94,7 +94,7 @@ function createCell(text) {
 
 function formatDate(dateValue) {
   if (!dateValue) {
-    return "—";
+    return "Not provided";
   }
 
   return new Intl.DateTimeFormat("en-AU", {
@@ -157,7 +157,14 @@ function renderMemberList(memberList) {
   });
 }
 
-function showMemberDetails(member) {
+function refreshMemberSearchResults() {
+  const searchInput = document.querySelector("#member-search");
+  if (searchInput) {
+    renderMemberList(searchMembersByName(searchInput.value));
+  }
+}
+
+function showMemberDetails(member, notice) {
   const details = document.querySelector("#member-details");
   if (!details) {
     return;
@@ -187,7 +194,110 @@ function showMemberDetails(member) {
     contact.append(term, definition);
   });
 
-  details.append(title, id, contact);
+  const actions = document.createElement("div");
+  actions.className = "detail-actions";
+  const editButton = document.createElement("button");
+  editButton.type = "button";
+  editButton.className = "primary-button";
+  editButton.textContent = "Edit member";
+  editButton.addEventListener("click", function () {
+    showMemberEditForm(member);
+  });
+  actions.appendChild(editButton);
+
+  if (member.status !== "Inactive") {
+    const deactivateButton = document.createElement("button");
+    deactivateButton.type = "button";
+    deactivateButton.className = "danger-button";
+    deactivateButton.textContent = "Deactivate member";
+    deactivateButton.addEventListener("click", function () {
+      if (deactivateMember(member.memberId)) {
+        refreshMemberSearchResults();
+        showMemberDetails(getMemberById(member.memberId), "Member marked as inactive.");
+      }
+    });
+    actions.appendChild(deactivateButton);
+  }
+
+  details.append(title, id, contact, actions);
+
+  if (notice) {
+    const message = document.createElement("p");
+    message.className = "form-message success";
+    message.textContent = notice;
+    details.appendChild(message);
+  }
+}
+
+function showMemberEditForm(member) {
+  const details = document.querySelector("#member-details");
+  if (!details) {
+    return;
+  }
+
+  details.replaceChildren();
+  const title = document.createElement("h3");
+  title.textContent = "Edit member";
+  const id = document.createElement("p");
+  id.className = "detail-id";
+  id.textContent = "Member ID #" + member.memberId;
+  const form = document.createElement("form");
+  form.className = "edit-member-form";
+  form.innerHTML =
+    '<div class="field-grid two-columns">' +
+      '<div class="field"><label for="edit-first-name">First name</label><input id="edit-first-name" name="firstName" type="text" autocomplete="given-name"></div>' +
+      '<div class="field"><label for="edit-last-name">Last name</label><input id="edit-last-name" name="lastName" type="text" autocomplete="family-name"></div>' +
+    '</div>' +
+    '<div class="field-grid two-columns">' +
+      '<div class="field"><label for="edit-date-of-birth">Date of birth</label><input id="edit-date-of-birth" name="dateOfBirth" type="date"></div>' +
+      '<div class="field"><label for="edit-gender">Gender</label><select id="edit-gender" name="gender"><option value="">Select gender (optional)</option><option value="Female">Female</option><option value="Male">Male</option><option value="Non-binary">Non-binary</option><option value="Prefer not to say">Prefer not to say</option></select></div>' +
+    '</div>' +
+    '<div class="field-grid two-columns">' +
+      '<div class="field"><label for="edit-phone">Phone</label><input id="edit-phone" name="phone" type="tel" autocomplete="tel"></div>' +
+      '<div class="field"><label for="edit-email">Email</label><input id="edit-email" name="email" type="email" autocomplete="email"></div>' +
+    '</div>' +
+    '<p class="form-message" aria-live="polite"></p>' +
+    '<div class="detail-actions"><button class="secondary-button" type="button">Cancel</button><button class="primary-button" type="submit">Save changes</button></div>';
+
+  form.elements.firstName.value = member.firstName;
+  form.elements.lastName.value = member.lastName;
+  form.elements.dateOfBirth.value = member.dateOfBirth || "";
+  form.elements.gender.value = member.gender || "";
+  form.elements.phone.value = member.phone || "";
+  form.elements.email.value = member.email || "";
+  form.elements.dateOfBirth.max = new Date().toISOString().slice(0, 10);
+
+  form.querySelector(".secondary-button").addEventListener("click", function () {
+    showMemberDetails(getMemberById(member.memberId));
+  });
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    if (!form.reportValidity()) {
+      return;
+    }
+
+    const updated = updateMember(member.memberId, {
+      firstName: form.elements.firstName.value,
+      lastName: form.elements.lastName.value,
+      dateOfBirth: form.elements.dateOfBirth.value,
+      gender: form.elements.gender.value,
+      phone: form.elements.phone.value,
+      email: form.elements.email.value
+    });
+
+    if (!updated) {
+      const message = form.querySelector(".form-message");
+      message.textContent = "Member changes could not be saved. Check the email address.";
+      message.className = "form-message error";
+      return;
+    }
+
+    refreshMemberSearchResults();
+    showMemberDetails(getMemberById(member.memberId), "Member changes saved.");
+  });
+
+  details.append(title, id, form);
 }
 
 function initialiseMemberPage() {
