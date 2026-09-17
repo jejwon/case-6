@@ -49,6 +49,7 @@ h2 { margin-bottom: 0; font-size: 22px; }
 .two-columns { grid-template-columns: 1fr 1fr; }
 .field { display: grid; gap: 7px; }
 label { color: #334955; font-size: 13px; font-weight: 700; }
+label span { color: var(--coral); }
 input, select { width: 100%; min-height: 43px; padding: 10px 12px; border: 1px solid #bdcbd2; border-radius: 5px; background: var(--white); color: var(--ink); font: inherit; }
 input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(7, 140, 200, .18); outline: none; }
 .form-message { min-height: 20px; margin: 14px 0; color: var(--muted); font-size: 13px; }

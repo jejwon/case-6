@@ -55,36 +55,34 @@
             <form id="add-member-form">
               <div class="field-grid two-columns">
                 <div class="field">
-                  <label for="first-name">First name</label>
-                  <input id="first-name" name="firstName" type="text" autocomplete="given-name">
+                  <label for="first-name">First name <span aria-hidden="true">*</span></label>
+                  <input id="first-name" name="firstName" type="text" autocomplete="given-name" required>
                 </div>
                 <div class="field">
-                  <label for="last-name">Last name</label>
-                  <input id="last-name" name="lastName" type="text" autocomplete="family-name">
+                  <label for="last-name">Last name <span aria-hidden="true">*</span></label>
+                  <input id="last-name" name="lastName" type="text" autocomplete="family-name" required>
                 </div>
               </div>
 
               <div class="field-grid two-columns">
                 <div class="field">
-                  <label for="date-of-birth">Date of birth</label>
-                  <input id="date-of-birth" name="dateOfBirth" type="date">
+                  <label for="date-of-birth">Date of birth <span aria-hidden="true">*</span></label>
+                  <input id="date-of-birth" name="dateOfBirth" type="date" required>
                 </div>
                 <div class="field">
-                  <label for="gender">Gender</label>
-                  <select id="gender" name="gender">
-                    <option value="" selected>Select gender (optional)</option>
-                    <option value="Female">Female</option>
+                  <label for="gender">Gender <span aria-hidden="true">*</span></label>
+                  <select id="gender" name="gender" required>
+                    <option value="" selected>Select gender</option>
                     <option value="Male">Male</option>
-                    <option value="Non-binary">Non-binary</option>
-                    <option value="Prefer not to say">Prefer not to say</option>
+                    <option value="Female">Female</option>
                   </select>
                 </div>
               </div>
 
               <div class="field-grid two-columns">
                 <div class="field">
-                  <label for="phone">Phone</label>
-                  <input id="phone" name="phone" type="tel" autocomplete="tel">
+                  <label for="phone">Phone <span aria-hidden="true">*</span></label>
+                  <input id="phone" name="phone" type="tel" autocomplete="tel" required>
                 </div>
                 <div class="field">
                   <label for="email">Email</label>

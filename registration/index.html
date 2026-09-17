@@ -53,19 +53,19 @@
             </div>
             <form id="create-registration-form">
               <div class="field">
-                <label for="registration-member">Member</label>
+                <label for="registration-member">Member <span aria-hidden="true">*</span></label>
                 <select id="registration-member" name="memberId" required>
                   <option value="" selected>Select a member</option>
                 </select>
               </div>
               <div class="field-grid two-columns">
                 <div class="field">
-                  <label for="registration-season">Season</label>
+                  <label for="registration-season">Season <span aria-hidden="true">*</span></label>
                   <input id="registration-season" name="season" type="text" required>
                 </div>
                 <div class="field">
                   <label for="registration-age-group">Age group</label>
-                  <input id="registration-age-group" name="ageGroup" type="text" required>
+                  <input id="registration-age-group" name="ageGroup" type="text" readonly aria-readonly="true">
                 </div>
               </div>
               <p id="create-registration-message" class="form-message" aria-live="polite"></p>

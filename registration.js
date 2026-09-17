@@ -18,13 +18,96 @@ function memberExists(memberId) {
   });
 }
 
+function getRegistrationMember(memberId) {
+  return getStore("members").find(function (member) {
+    return member.memberId === Number(memberId);
+  }) || null;
+}
+
+function calculateCurrentAge(dateOfBirth) {
+  const dateParts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dateOfBirth || ""));
+  if (!dateParts) {
+    return null;
+  }
+
+  const birthYear = Number(dateParts[1]);
+  const birthMonth = Number(dateParts[2]) - 1;
+  const birthDay = Number(dateParts[3]);
+  const birthday = new Date(birthYear, birthMonth, birthDay);
+
+  if (birthday.getFullYear() !== birthYear ||
+      birthday.getMonth() !== birthMonth ||
+      birthday.getDate() !== birthDay) {
+    return null;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (birthday > today) {
+    return null;
+  }
+
+  let age = today.getFullYear() - birthYear;
+  const birthdayHasNotOccurred = today.getMonth() < birthMonth ||
+    (today.getMonth() === birthMonth && today.getDate() < birthDay);
+
+  if (birthdayHasNotOccurred) {
+    age -= 1;
+  }
+
+  return age;
+}
+
+function getAutomaticAgeGroup(member) {
+  if (!member) {
+    return null;
+  }
+
+  const age = calculateCurrentAge(member.dateOfBirth);
+  if (age === null) {
+    return null;
+  }
+
+  if (age >= 18) {
+    return "Senior";
+  }
+
+  if (member.gender === "Male") {
+    return "U" + age + " Boys";
+  }
+
+  if (member.gender === "Female") {
+    return "U" + age + " Girls";
+  }
+
+  return null;
+}
+
+function getAgeGroupValidationMessage(memberId) {
+  const member = getRegistrationMember(memberId);
+
+  if (!member) {
+    return "Select a member before creating a registration.";
+  }
+
+  if (calculateCurrentAge(member.dateOfBirth) === null) {
+    return "The selected member needs a valid date of birth before registration can be created.";
+  }
+
+  if (getAutomaticAgeGroup(member) === null) {
+    return "The selected member needs Gender set to Male or Female before registration can be created.";
+  }
+
+  return "Registration details are invalid.";
+}
+
 function createRegistration(memberId, season, ageGroup) {
   const numericMemberId = Number(memberId);
   const cleanSeason = String(season || "").trim();
-  const cleanAgeGroup = String(ageGroup || "").trim();
   const registrations = getStore("registrations");
+  const generatedAgeGroup = getAutomaticAgeGroup(getRegistrationMember(numericMemberId));
 
-  if (!memberExists(numericMemberId) || !cleanSeason || !cleanAgeGroup) {
+  if (!memberExists(numericMemberId) || !cleanSeason || !generatedAgeGroup) {
     return null;
   }
 
@@ -44,7 +127,7 @@ function createRegistration(memberId, season, ageGroup) {
     registrationId: nextId,
     memberId: numericMemberId,
     season: cleanSeason,
-    ageGroup: cleanAgeGroup,
+    ageGroup: generatedAgeGroup,
     status: "Started"
   });
 
@@ -62,15 +145,13 @@ function updateRegistration(registrationId, updatedFields) {
   }
 
   const hasSeason = Object.prototype.hasOwnProperty.call(updatedFields, "season");
-  const hasAgeGroup = Object.prototype.hasOwnProperty.call(updatedFields, "ageGroup");
-
-  if (!hasSeason && !hasAgeGroup) {
+  if (!hasSeason) {
     return false;
   }
 
   const registration = registrations[registrationIndex];
   const season = hasSeason ? String(updatedFields.season || "").trim() : registration.season;
-  const ageGroup = hasAgeGroup ? String(updatedFields.ageGroup || "").trim() : registration.ageGroup;
+  const ageGroup = getAutomaticAgeGroup(getRegistrationMember(registration.memberId));
 
   if (!season || !ageGroup) {
     return false;
@@ -216,8 +297,8 @@ function showRegistrationDetails(registrationId, notice, isError) {
   const form = document.createElement("form");
   form.className = "edit-registration-form";
   form.innerHTML =
-    '<div class="field"><label for="edit-season">Season</label><input id="edit-season" name="season" type="text" required></div>' +
-    '<div class="field"><label for="edit-age-group">Age group</label><input id="edit-age-group" name="ageGroup" type="text" required></div>' +
+    '<div class="field"><label for="edit-season">Season <span aria-hidden="true">*</span></label><input id="edit-season" name="season" type="text" required></div>' +
+    '<div class="field"><label for="edit-age-group">Age group</label><input id="edit-age-group" name="ageGroup" type="text" readonly aria-readonly="true"></div>' +
     '<div class="registration-status"><span>Status</span><strong class="' + registrationStatusClass(registration.status) + '">' + registration.status + '</strong></div>' +
     '<p class="form-message" aria-live="polite"></p>' +
     '<div class="detail-actions"><button class="primary-button" type="submit">Update Registration</button></div>';
@@ -232,10 +313,13 @@ function showRegistrationDetails(registrationId, notice, isError) {
     }
 
     if (!updateRegistration(registration.registrationId, {
-      season: form.elements.season.value,
-      ageGroup: form.elements.ageGroup.value
+      season: form.elements.season.value
     })) {
-      showRegistrationDetails(registration.registrationId, "Registration changes could not be saved. A registration for this member and season may already exist.", true);
+      const generatedAgeGroup = getAutomaticAgeGroup(getRegistrationMember(registration.memberId));
+      const errorMessage = generatedAgeGroup ?
+        "Registration changes could not be saved. A registration for this member and season may already exist." :
+        getAgeGroupValidationMessage(registration.memberId);
+      showRegistrationDetails(registration.registrationId, errorMessage, true);
       return;
     }
 
@@ -283,6 +367,36 @@ function populateMemberOptions() {
   });
 }
 
+function updateRegistrationAgeGroupField() {
+  const memberSelect = document.querySelector("#registration-member");
+  const ageGroupInput = document.querySelector("#registration-age-group");
+  const message = document.querySelector("#create-registration-message");
+
+  if (!memberSelect || !ageGroupInput || !message) {
+    return false;
+  }
+
+  if (!memberSelect.value) {
+    ageGroupInput.value = "";
+    message.textContent = "";
+    message.className = "form-message";
+    return false;
+  }
+
+  const ageGroup = getAutomaticAgeGroup(getRegistrationMember(memberSelect.value));
+  ageGroupInput.value = ageGroup || "";
+
+  if (!ageGroup) {
+    message.textContent = getAgeGroupValidationMessage(memberSelect.value);
+    message.className = "form-message error";
+    return false;
+  }
+
+  message.textContent = "";
+  message.className = "form-message";
+  return true;
+}
+
 function initialiseRegistrationPage() {
   const form = document.querySelector("#create-registration-form");
   if (!form) {
@@ -294,10 +408,23 @@ function initialiseRegistrationPage() {
   renderRegistrationList();
 
   const message = document.querySelector("#create-registration-message");
+  const memberSelect = document.querySelector("#registration-member");
+  memberSelect.addEventListener("change", updateRegistrationAgeGroupField);
+  form.addEventListener("reset", function () {
+    window.setTimeout(updateRegistrationAgeGroupField, 0);
+  });
   form.addEventListener("submit", function (event) {
     event.preventDefault();
 
     if (!form.reportValidity()) {
+      return;
+    }
+
+    if (!updateRegistrationAgeGroupField()) {
+      if (!memberSelect.value) {
+        message.textContent = "Select a member before creating a registration.";
+        message.className = "form-message error";
+      }
       return;
     }
 
