@@ -1,203 +1,163 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Warrigal Park FC | Add Guardian</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
 
-  <body>
-    <div class="app-shell">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Warrigal Park FC | Add Guardian</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 
-      <aside class="sidebar" aria-label="Main navigation">
-        <a class="brand" href="#top">WPFC<span>Admin</span></a>
+<body>
+  <div class="app-shell">
 
-        <nav>
-          <button
-            class="nav-group-toggle"
-            type="button"
-            aria-expanded="true"
-            aria-controls="guardian-management-menu">
-            Guardian Management
-          </button>
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#top">WPFC<span>Admin</span></a>
 
-          <div id="guardian-management-menu" class="nav-submenu">
-            <a
-              class="nav-subitem active"
-              href="index.html"
-              aria-current="page">
-              Add Guardian
-            </a>
-          </div>
-        </nav>
-      </aside>
+      <nav>
+        <button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="guardian-management-menu">
+          Guardian Management
+        </button>
+
+        <div id="guardian-management-menu" class="nav-submenu">
+          <a class="nav-subitem active" href="index.html" aria-current="page">
+            Add Guardian
+          </a>
+
+          <a class="nav-subitem" href="search.html">
+            Search Guardians
+          </a>
+        </div>
+      </nav>
+    </aside>
 
 
-      <main id="top" class="main-content">
+    <main id="top" class="main-content">
 
-        <header class="topbar">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Warrigal Park Football Club</p>
+          <h1>Add Guardian</h1>
+        </div>
+
+        <div class="user-label">Registrar</div>
+      </header>
+
+
+      <!-- Add Guardian -->
+      <section id="add-guardian" class="panel form-panel" aria-labelledby="add-guardian-heading">
+
+        <div class="panel-heading">
           <div>
-            <p class="eyebrow">Warrigal Park Football Club</p>
-            <h1>Add Guardian</h1>
+            <p class="eyebrow">Guardian Management</p>
+            <h2 id="add-guardian-heading">Add Guardian</h2>
           </div>
-
-          <div class="user-label">Registrar</div>
-        </header>
+        </div>
 
 
-        <!-- Add Guardian -->
-        <section
-          id="add-guardian"
-          class="panel form-panel"
-          aria-labelledby="add-guardian-heading">
+        <form id="add-guardian-form">
 
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">Guardian Management</p>
-              <h2 id="add-guardian-heading">Add Guardian</h2>
-            </div>
-          </div>
-
-
-          <form id="add-guardian-form">
-
-            <div class="field-grid two-columns">
-
-              <div class="field">
-                <label for="first-name">First name</label>
-                <input
-                  id="first-name"
-                  name="firstName"
-                  type="text"
-                  autocomplete="given-name"
-                  required>
-              </div>
-
-              <div class="field">
-                <label for="last-name">Last name</label>
-                <input
-                  id="last-name"
-                  name="lastName"
-                  type="text"
-                  autocomplete="family-name"
-                  required>
-              </div>
-
-            </div>
-
-
-            <div class="field-grid two-columns">
-
-              <div class="field">
-                <label for="mobile">Mobile</label>
-                <input
-                  id="mobile"
-                  name="mobile"
-                  type="tel"
-                  autocomplete="tel"
-                  required>
-              </div>
-
-              <div class="field">
-                <label for="email">Email</label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autocomplete="email"
-                  required>
-              </div>
-
-            </div>
-
+          <div class="field-grid two-columns">
 
             <div class="field">
-              <label for="address">Address</label>
-              <input
-                id="address"
-                name="address"
-                type="text"
-                autocomplete="street-address"
-                required>
+              <label for="first-name">First name</label>
+              <input id="first-name" name="firstName" type="text" autocomplete="given-name" required>
             </div>
 
-
-            <p id="form-message" class="form-message" aria-live="polite"></p>
-
-
-            <div class="form-actions">
-              <button class="secondary-button" type="reset">
-                Clear form
-              </button>
-
-              <button class="primary-button" type="submit">
-                Save Guardian
-              </button>
+            <div class="field">
+              <label for="last-name">Last name</label>
+              <input id="last-name" name="lastName" type="text" autocomplete="family-name" required>
             </div>
 
-          </form>
-
-        </section>
-
-
-        <!-- Link Guardian to Junior -->
-        <section
-          id="link-guardian"
-          class="panel form-panel"
-          aria-labelledby="link-guardian-heading">
-
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">Guardian Management</p>
-              <h2 id="link-guardian-heading">
-                Link Guardian to Junior
-              </h2>
-            </div>
           </div>
 
 
-          <form id="link-guardian-form">
+          <div class="field-grid two-columns">
 
             <div class="field">
-              <label for="guardian-id">Guardian ID</label>
-              <input
-                id="guardian-id"
-                name="guardianId"
-                type="number"
-                required>
+              <label for="mobile">Mobile</label>
+              <input id="mobile" name="mobile" type="tel" autocomplete="tel" required>
             </div>
-
 
             <div class="field">
-              <label for="member-id">Junior Member ID</label>
-              <input
-                id="member-id"
-                name="memberId"
-                type="number"
-                required>
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required>
             </div>
 
+          </div>
 
-            <p id="link-message" class="form-message" aria-live="polite"></p>
+
+          <div class="field">
+            <label for="address">Address</label>
+            <input id="address" name="address" type="text" autocomplete="street-address" required>
+          </div>
 
 
-            <div class="form-actions">
-              <button class="primary-button" type="submit">
-                Link Guardian
-              </button>
-            </div>
+          <p id="form-message" class="form-message" aria-live="polite"></p>
 
-          </form>
 
-        </section>
-        
-      </main>
-    </div>
+          <div class="form-actions">
+            <button class="secondary-button" type="reset">
+              Clear form
+            </button>
 
-    <script src="../team/mockdata.js"></script>
-    <script src="../data.js"></script>
-    <script src="guardian.js"></script>
+            <button class="primary-button" type="submit">
+              Save Guardian
+            </button>
+          </div>
 
-  </body>
+        </form>
+
+      </section>
+
+
+      <!-- Link Guardian to Junior -->
+      <section id="link-guardian" class="panel form-panel" aria-labelledby="link-guardian-heading">
+
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Guardian Management</p>
+            <h2 id="link-guardian-heading">
+              Link Guardian to Junior
+            </h2>
+          </div>
+        </div>
+
+
+        <form id="link-guardian-form">
+
+          <div class="field">
+            <label for="guardian-id">Guardian ID</label>
+            <input id="guardian-id" name="guardianId" type="number" required>
+          </div>
+
+
+          <div class="field">
+            <label for="member-id">Junior Member ID</label>
+            <input id="member-id" name="memberId" type="number" required>
+          </div>
+
+
+          <p id="link-message" class="form-message" aria-live="polite"></p>
+
+
+          <div class="form-actions">
+            <button class="primary-button" type="submit">
+              Link Guardian
+            </button>
+          </div>
+
+        </form>
+
+      </section>
+
+    </main>
+  </div>
+
+  <script src="../team/mockdata.js"></script>
+  <script src="../data.js"></script>
+  <script src="guardian.js"></script>
+
+</body>
+
 </html>
