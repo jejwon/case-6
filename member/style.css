@@ -197,6 +197,17 @@ button { min-height: 42px; padding: 10px 17px; border: 0; border-radius: 5px; fo
 dl { display: grid; grid-template-columns: 1fr; gap: 4px; margin: 21px 0 0; }
 dt { margin-top: 11px; color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; }
 dd { margin: 0; color: var(--ink); overflow-wrap: anywhere; }
+.registration-history { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line); }
+.registration-history h4 { margin: 0 0 13px; color: var(--ink); font-size: 15px; }
+.history-table-wrap { overflow-x: auto; }
+.registration-history table { min-width: 100%; font-size: 12px; }
+.registration-history th { padding: 9px 8px; font-size: 10px; }
+.registration-history td { padding: 10px 8px; white-space: normal; }
+.registration-history .status { padding: 4px 7px; font-size: 11px; }
+.registration-history .registration-status-started { background: #e7f5fa; color: var(--blue-dark); }
+.registration-history .registration-status-complete { background: #e3f5e9; color: var(--success); }
+.registration-history .registration-status-withdrawn { background: #f6e7e5; color: #a44139; }
+.history-empty-state { margin: 0; padding: 16px; border: 1px solid var(--line); border-radius: 5px; color: var(--muted); text-align: center; }
 
 .directory-panel { padding: 27px 28px 20px; }
 .search-field { display: flex; align-items: center; width: min(285px, 100%); padding: 0 10px; border: 1px solid #bdcbd2; border-radius: 5px; color: var(--muted); }

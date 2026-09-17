@@ -523,6 +523,10 @@ function initialiseRegistrationPage() {
 }
 
 function initialiseRegistrationNavigation() {
+  if (!document.querySelector("#create-registration-form")) {
+    return;
+  }
+
   document.querySelectorAll(".nav-group-toggle").forEach(function (toggle) {
     toggle.addEventListener("click", function () {
       const submenu = document.getElementById(toggle.getAttribute("aria-controls"));
