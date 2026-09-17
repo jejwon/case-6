@@ -12,38 +12,41 @@
   <div class="app-shell">
 
     <aside class="sidebar" aria-label="Main navigation">
-      <a class="brand" href="#top">WPFC<span>Admin</span></a>
+      <a class="brand" href="../index.html">WPFC<span>Admin</span></a>
 
       <nav>
-        <button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="member-management-menu">
-          Member Management
-        </button>
-        <div id="member-management-menu" class="nav-submenu">
-          <a class="nav-subitem" href="../member/index.html">Add New Member</a>
-          <a class="nav-subitem" href="../member/search.html">Search Members</a>
-        </div>
-        <button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="guardian-management-menu">
-          Guardian Management
-        </button>
+        <a class="nav-group-link" href="../index.html">Dashboard</a>
 
-        <div id="guardian-management-menu" class="nav-submenu">
-          <a class="nav-subitem active" href="index.html" aria-current="page">
-            Add Guardian
-          </a>
+        <details class="nav-group">
+          <summary class="nav-group-toggle">Member Management</summary>
+          <div class="nav-submenu">
+            <a class="nav-subitem" href="../member/index.html">Add New Member</a>
+            <a class="nav-subitem" href="../member/search.html">Search Members</a>
+          </div>
+        </details>
 
-          <a class="nav-subitem" href="search.html">
-            Search Guardians
-          </a>
-        </div>
-        <button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="registration-management-menu">
-          Registration Management
-        </button>
-        <div id="registration-management-menu" class="nav-submenu">
-          <a class="nav-subitem" href="../registration/index.html">Manage Registrations</a>
-        </div>
+        <details class="nav-group" open>
+          <summary class="nav-group-toggle">Guardian Management</summary>
+
+          <div class="nav-submenu">
+            <a class="nav-subitem active" href="index.html" aria-current="page">
+              Add Guardian
+            </a>
+
+            <a class="nav-subitem" href="search.html">
+              Search Guardians
+            </a>
+          </div>
+        </details>
+
+        <details class="nav-group">
+          <summary class="nav-group-toggle">Registration Management</summary>
+          <div class="nav-submenu">
+            <a class="nav-subitem" href="../registration/index.html">Manage Registrations</a>
+          </div>
+        </details>
       </nav>
     </aside>
-
 
     <main id="top" class="main-content">
 
@@ -56,7 +59,6 @@
         <div class="user-label">Registrar</div>
       </header>
 
-
       <!-- Add Guardian -->
       <section id="add-guardian" class="panel form-panel" aria-labelledby="add-guardian-heading">
 
@@ -66,7 +68,6 @@
             <h2 id="add-guardian-heading">Add Guardian</h2>
           </div>
         </div>
-
 
         <form id="add-guardian-form">
 
@@ -84,7 +85,6 @@
 
           </div>
 
-
           <div class="field-grid two-columns">
 
             <div class="field">
@@ -99,15 +99,12 @@
 
           </div>
 
-
           <div class="field">
             <label for="address">Address</label>
             <input id="address" name="address" type="text" autocomplete="street-address" required>
           </div>
 
-
           <p id="form-message" class="form-message" aria-live="polite"></p>
-
 
           <div class="form-actions">
             <button class="secondary-button" type="reset">
@@ -120,9 +117,7 @@
           </div>
 
         </form>
-
       </section>
-
 
       <!-- Link Guardian to Junior -->
       <section id="link-guardian" class="panel form-panel" aria-labelledby="link-guardian-heading">
@@ -136,7 +131,6 @@
           </div>
         </div>
 
-
         <form id="link-guardian-form">
 
           <div class="field">
@@ -144,15 +138,12 @@
             <input id="guardian-id" name="guardianId" type="number" required>
           </div>
 
-
           <div class="field">
             <label for="member-id">Junior Member ID</label>
             <input id="member-id" name="memberId" type="number" required>
           </div>
 
-
           <p id="link-message" class="form-message" aria-live="polite"></p>
-
 
           <div class="form-actions">
             <button class="primary-button" type="submit">
@@ -161,7 +152,6 @@
           </div>
 
         </form>
-
       </section>
 
     </main>

@@ -9,25 +9,22 @@
   <body>
     <div class="app-shell">
       <aside class="sidebar" aria-label="Main navigation">
-        <a class="brand" href="index.html">WPFC<span>Admin</span></a>
+        <a class="brand" href="../index.html">WPFC<span>Admin</span></a>
 
         <nav>
-          <button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="member-management-menu">
-            Member Management
-          </button>
-          <div id="member-management-menu" class="nav-submenu">
-            <a class="nav-subitem" href="../member/index.html">Add New Member</a>
-            <a class="nav-subitem" href="../member/search.html">Search Members</a>
-          </div>
-          <button
-            class="nav-group-toggle"
-            type="button"
-            aria-expanded="true"
-            aria-controls="guardian-management-menu">
-            Guardian Management
-          </button>
+          <a class="nav-group-link" href="../index.html">Dashboard</a>
 
-          <div id="guardian-management-menu" class="nav-submenu">
+          <details class="nav-group">
+            <summary class="nav-group-toggle">Member Management</summary>
+            <div class="nav-submenu">
+              <a class="nav-subitem" href="../member/index.html">Add New Member</a>
+              <a class="nav-subitem" href="../member/search.html">Search Members</a>
+            </div>
+          </details>
+
+          <details class="nav-group" open>
+            <summary class="nav-group-toggle">Guardian Management</summary>
+            <div class="nav-submenu">
             <a class="nav-subitem" href="index.html">
               Add Guardian
             </a>
@@ -38,13 +35,15 @@
               aria-current="page">
               Search Guardians
             </a>
-          </div>
-          <button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="registration-management-menu">
-            Registration Management
-          </button>
-          <div id="registration-management-menu" class="nav-submenu">
-            <a class="nav-subitem" href="../registration/index.html">Manage Registrations</a>
-          </div>
+            </div>
+          </details>
+
+          <details class="nav-group">
+            <summary class="nav-group-toggle">Registration Management</summary>
+            <div class="nav-submenu">
+              <a class="nav-subitem" href="../registration/index.html">Manage Registrations</a>
+            </div>
+          </details>
         </nav>
       </aside>
 
