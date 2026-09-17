@@ -94,6 +94,29 @@ body {
 .nav-subitem:hover, .nav-subitem:focus-visible, .nav-subitem.active { background: rgba(20, 156, 207, .25); color: var(--white); outline: none; }
 .nav-subitem.active { border-left: 3px solid #52d0f1; border-radius: 0 5px 5px 0; }
 
+.nav-group-link {
+  display: block;
+  padding: 13px 14px;
+  border-radius: 6px;
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.nav-group-link:hover,
+.nav-group-link:focus-visible,
+.nav-group-link.active {
+  background: rgba(20, 156, 207, .25);
+  color: var(--white);
+  outline: none;
+}
+
+.nav-group-link.active {
+  border-left: 3px solid #52d0f1;
+  border-radius: 0 6px 6px 0;
+}
+
 .main-content { width: min(1180px, 100%); margin: 0 auto; padding: 0 34px 46px; }
 
 .topbar {
