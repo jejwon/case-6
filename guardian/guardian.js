@@ -107,6 +107,18 @@ function linkGuardianToMember(guardianId, memberId) {
   return true;
 }
 
+function getGuardiansForMember(memberId) {
+  const numericMemberId = Number(memberId);
+
+  return getStore("guardianMembers").filter(function (link) {
+    return link.memberId === numericMemberId;
+  }).map(function (link) {
+    return getGuardianById(link.guardianId);
+  }).filter(function (guardian) {
+    return guardian !== null;
+  });
+}
+
 function initialiseGuardianPage() {
   const form = document.querySelector("#add-guardian-form");
 
@@ -473,7 +485,9 @@ function initialiseGuardianNavigation() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  initialiseGuardianNavigation();
+  if (document.querySelector("#add-guardian-form, #link-guardian-form, #guardian-search")) {
+    initialiseGuardianNavigation();
+  }
   initialiseGuardianPage();
   initialiseGuardianLink();
   initialiseGuardianSearchPage();

@@ -186,6 +186,50 @@ function withdrawRegistration(registrationId) {
   return saveStore("registrations", registrations);
 }
 
+function completeRegistration(registrationId) {
+  const registrations = getStore("registrations");
+  const registration = registrations.find(function (item) {
+    return item.registrationId === Number(registrationId);
+  });
+
+  if (!registration) {
+    return { success: false, reason: "Registration not found." };
+  }
+
+  if (registration.status === "Complete") {
+    return { success: false, reason: "Registration is already complete." };
+  }
+
+  if (registration.status === "Withdrawn") {
+    return { success: false, reason: "Withdrawn registrations cannot be completed." };
+  }
+
+  if (registration.status !== "Started") {
+    return { success: false, reason: "Only started registrations can be completed." };
+  }
+
+  const member = getRegistrationMember(registration.memberId);
+  const age = member ? calculateCurrentAge(member.dateOfBirth) : null;
+
+  if (age === null) {
+    return {
+      success: false,
+      reason: "The member needs a valid date of birth before registration can be completed."
+    };
+  }
+
+  if (age < 18 && getGuardiansForMember(registration.memberId).length === 0) {
+    return { success: false, reason: "Guardian required for junior registration" };
+  }
+
+  registration.status = "Complete";
+  if (!saveStore("registrations", registrations)) {
+    return { success: false, reason: "Registration could not be completed." };
+  }
+
+  return { success: true, reason: null };
+}
+
 function getRegistrationStatus(memberId, season) {
   const registration = getStore("registrations").find(function (item) {
     return item.memberId === Number(memberId) && item.season === String(season);
@@ -284,24 +328,35 @@ function showRegistrationDetails(registrationId, notice, isError) {
 
   details.replaceChildren();
 
+  const profile = document.createElement("div");
+  profile.className = "profile-section";
+
   const title = document.createElement("h3");
+  title.className = "member-name";
   title.textContent = getMemberName(registration.memberId);
-  const id = document.createElement("p");
-  id.className = "detail-id";
+
+  const metaBadges = document.createElement("div");
+  metaBadges.className = "meta-badges";
+
+  const id = document.createElement("span");
+  id.className = "badge";
   id.textContent = "Registration ID #" + registration.registrationId;
 
-  const member = document.createElement("p");
-  member.className = "detail-member";
+  const member = document.createElement("span");
+  member.className = "badge";
   member.textContent = "Member ID #" + registration.memberId;
+
+  metaBadges.append(id, member);
+  profile.append(title, metaBadges);
 
   const form = document.createElement("form");
   form.className = "edit-registration-form";
   form.innerHTML =
-    '<div class="field"><label for="edit-season">Season <span aria-hidden="true">*</span></label><input id="edit-season" name="season" type="text" required></div>' +
-    '<div class="field"><label for="edit-age-group">Age group</label><input id="edit-age-group" name="ageGroup" type="text" readonly aria-readonly="true"></div>' +
-    '<div class="registration-status"><span>Status</span><strong class="' + registrationStatusClass(registration.status) + '">' + registration.status + '</strong></div>' +
+    '<div class="field form-group"><label for="edit-season">Season <span aria-hidden="true">*</span></label><input class="form-control" id="edit-season" name="season" type="text" required></div>' +
+    '<div class="field form-group"><label for="edit-age-group">Age group</label><input class="form-control" id="edit-age-group" name="ageGroup" type="text" readonly aria-readonly="true"></div>' +
+    '<div class="registration-status status-row"><span class="status-label">Status</span><strong class="' + registrationStatusClass(registration.status) + '">' + registration.status + '</strong></div>' +
     '<p class="form-message" aria-live="polite"></p>' +
-    '<div class="detail-actions"><button class="primary-button" type="submit">Update Registration</button></div>';
+    '<div class="action-buttons"><button class="secondary-button" type="submit">Update Registration</button></div>';
 
   form.elements.season.value = registration.season;
   form.elements.ageGroup.value = registration.ageGroup;
@@ -327,8 +382,27 @@ function showRegistrationDetails(registrationId, notice, isError) {
     renderRegistrationList(registration.registrationId);
   });
 
-  const actions = document.createElement("div");
-  actions.className = "detail-actions";
+  const actions = form.querySelector(".action-buttons");
+  if (registration.status === "Started") {
+    const completeButton = document.createElement("button");
+    completeButton.type = "button";
+    completeButton.className = "primary-button";
+    completeButton.textContent = "Complete Registration";
+    completeButton.addEventListener("click", function () {
+      const result = completeRegistration(registration.registrationId);
+      showRegistrationDetails(
+        registration.registrationId,
+        result.success ? "Registration completed." : result.reason,
+        !result.success
+      );
+
+      if (result.success) {
+        renderRegistrationList(registration.registrationId);
+      }
+    });
+    actions.prepend(completeButton);
+  }
+
   if (registration.status !== "Withdrawn") {
     const withdrawButton = document.createElement("button");
     withdrawButton.type = "button";
@@ -343,14 +417,14 @@ function showRegistrationDetails(registrationId, notice, isError) {
     actions.appendChild(withdrawButton);
   }
 
-  details.append(title, id, member, form, actions);
-
   if (notice) {
-    const message = document.createElement("p");
-    message.className = "form-message " + (isError ? "error" : "success");
+    const message = form.querySelector(".form-message");
+    message.className = "form-message alert-banner " +
+      (isError ? "alert-warning" : "alert-success");
     message.textContent = notice;
-    details.appendChild(message);
   }
+
+  details.append(profile, form);
 }
 
 function populateMemberOptions() {
