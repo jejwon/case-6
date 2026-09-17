@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Warrigal Park FC | Guardian Search</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="index.html">WPFC<span>Admin</span></a>
+
+        <nav>
+          <button
+            class="nav-group-toggle"
+            type="button"
+            aria-expanded="true"
+            aria-controls="guardian-management-menu">
+            Guardian Management
+          </button>
+
+          <div id="guardian-management-menu" class="nav-submenu">
+            <a class="nav-subitem" href="index.html">
+              Add Guardian
+            </a>
+
+            <a
+              class="nav-subitem active"
+              href="search.html"
+              aria-current="page">
+              Search Guardians
+            </a>
+          </div>
+        </nav>
+      </aside>
+
+      <main id="guardian-search-page" class="main-content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Warrigal Park Football Club</p>
+            <h1>Guardian Search</h1>
+          </div>
+
+          <div class="user-label">Registrar</div>
+        </header>
+
+        <section class="summary-card" aria-label="Guardian summary">
+          <div class="summary-icon" aria-hidden="true">G</div>
+
+          <div>
+            <p>Total Guardians</p>
+            <strong id="total-guardians">0</strong>
+          </div>
+        </section>
+
+        <div class="content-grid">
+
+          <section
+            class="panel directory-panel"
+            aria-labelledby="directory-heading">
+
+            <div class="directory-heading">
+              <div>
+                <p class="eyebrow">Records</p>
+                <h2 id="directory-heading">Search guardians</h2>
+              </div>
+
+              <label class="search-field" for="guardian-search">
+                <span class="visually-hidden">
+                  Search guardians by name
+                </span>
+
+                <span aria-hidden="true">⌕</span>
+
+                <input
+                  id="guardian-search"
+                  type="search"
+                  placeholder="Search by name"
+                  autocomplete="off">
+              </label>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Guardian</th>
+                    <th scope="col">Mobile</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Address</th>
+                  </tr>
+                </thead>
+
+                <tbody id="guardian-list"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <aside
+            class="panel details-panel"
+            aria-labelledby="details-heading">
+
+            <p class="eyebrow">Selected record</p>
+
+            <h2 id="details-heading">Guardian details</h2>
+
+            <div id="guardian-details" class="guardian-details">
+              <p>
+                Select a guardian from the search results to read their details.
+              </p>
+            </div>
+
+          </aside>
+
+        </div>
+      </main>
+    </div>
+
+    <script src="../team/mockdata.js"></script>
+    <script src="../data.js"></script>
+    <script src="guardian.js"></script>
+  </body>
+</html>
