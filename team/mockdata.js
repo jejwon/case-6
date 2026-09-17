@@ -1,438 +1,586 @@
 // data.js
 // WPFC Member Management System
 // Mock / Fixed Data for test
+/* Mock data for Warrigal Park FC.
+   Senior classification is supplied as mock data because
+   the case study does not specify a minimum Senior age.
+*/
+
+// ## Mock Data Description
+
+// The mock data is based on the requirements and examples provided in the Warrigal Park Football Club case study.
+
+// The data includes members, guardians, guardian-member relationships, registrations, teams, and team memberships. Synthetic names, contact details, and addresses are used for demonstration and testing only.
+
+// ### Data Rules and Assumptions
+
+// * Junior age groups are based on the player's age as at 31 December 2026, following the association's age-group rule.
+// * Members under 18 require a linked guardian before their registration can be completed.
+// * Members aged 18 or over do not require a guardian.
+// * The case study does not specify a minimum age for Senior classification. Therefore, Senior classification is provided as mock data and is not automatically calculated from the member's date of birth.
+// * Over 35 classification is also provided as mock data because the case study identifies Over 35 sides but does not provide a calculation rule for this category.
+// * Jayden Marsh is included as a special test case because the case study states that he is 17 and is playing seniors in 2026, while the requirement about whether he needs the guardian section is unresolved.
+// * No real personal information is used in the mock data.
+
+// The mock data is intended to support the prototype, demonstrate the main system functions, and test registration, guardian, team, and roster requirements.
 
 const members = [
   {
-    memberId: 1,
-    firstName: "Liam",
-    lastName: "Smith",
-    dateOfBirth: "2014-05-12",
-    gender: "Male",
-    phone: "0400 000 001",
-    email: "liam.smith@example.com",
-    status: "Active"
-  },
-  {
-    memberId: 2,
-    firstName: "Emma",
-    lastName: "Smith",
-    dateOfBirth: "2013-08-20",
-    gender: "Female",
-    phone: "0400 000 002",
-    email: "emma.smith@example.com",
-    status: "Active"
-  },
-  {
-    memberId: 3,
-    firstName: "Noah",
-    lastName: "Brown",
-    dateOfBirth: "2014-03-15",
-    gender: "Male",
-    phone: "0400 000 003",
-    email: "noah.brown@example.com",
-    status: "Active"
-  },
-  {
-    memberId: 4,
-    firstName: "Olivia",
-    lastName: "Jones",
-    dateOfBirth: "2013-11-02",
-    gender: "Female",
-    phone: "0400 000 004",
-    email: "olivia.jones@example.com",
-    status: "Active"
-  },
-  {
-    memberId: 5,
-    firstName: "Jack",
-    lastName: "Wilson",
-    dateOfBirth: "2012-06-18",
-    gender: "Male",
-    phone: "0400 000 005",
-    email: "jack.wilson@example.com",
-    status: "Active"
-  },
-  {
-    memberId: 6,
-    firstName: "Ava",
-    lastName: "Taylor",
-    dateOfBirth: "2011-09-25",
-    gender: "Female",
-    phone: "0400 000 006",
-    email: "ava.taylor@example.com",
-    status: "Active"
-  },
-  {
-    memberId: 7,
-    firstName: "Ethan",
-    lastName: "Miller",
-    dateOfBirth: "2008-02-14",
-    gender: "Male",
-    phone: "0400 000 007",
-    email: "ethan.miller@example.com",
-    status: "Active"
-  },
-  {
-    memberId: 8,
-    firstName: "Sophie",
-    lastName: "Davis",
-    dateOfBirth: "2006-07-30",
-    gender: "Female",
-    phone: "0400 000 008",
-    email: "sophie.davis@example.com",
-    status: "Active"
-  },
-  {
-    // Same name as member 10 for search/duplicate testing
-    memberId: 9,
-    firstName: "James",
-    lastName: "Lee",
-    dateOfBirth: "2014-04-10",
-    gender: "Male",
-    phone: "0400 000 009",
-    email: "james.lee1@example.com",
-    status: "Active"
-  },
-  {
-    // Same name as member 9 for duplicate search testing
-    memberId: 10,
-    firstName: "James",
-    lastName: "Lee",
-    dateOfBirth: "2013-12-05",
-    gender: "Male",
-    phone: "0400 000 010",
-    email: "james.lee2@example.com",
-    status: "Active"
-  },
-  {
-    memberId: 11,
+    id: "M001",
     firstName: "Mia",
-    lastName: "Anderson",
-    dateOfBirth: "2015-01-22",
+    lastName: "Carter",
+    dateOfBirth: "2014-03-09",
     gender: "Female",
-    phone: "0400 000 011",
-    email: "mia.anderson@example.com",
+    category: "Junior",
+    ageGroup: "U13",
+    email: "mia.carter@example.com",
+    phone: "0400 100 001",
+    address: "10 Example Street, Bald Hills QLD 4036",
     status: "Active"
   },
   {
-    memberId: 12,
-    firstName: "Daniel",
-    lastName: "Thomas",
-    dateOfBirth: "2004-10-17",
+    id: "M002",
+    firstName: "Rory",
+    lastName: "Carter",
+    dateOfBirth: "2018-07-15",
     gender: "Male",
-    phone: "0400 000 012",
-    email: "daniel.thomas@example.com",
+    category: "Junior",
+    ageGroup: "U9",
+    email: "rory.carter@example.com",
+    phone: "0400 100 002",
+    address: "10 Example Street, Bald Hills QLD 4036",
     status: "Active"
+  },
+  {
+    id: "M003",
+    firstName: "Ruby",
+    lastName: "Evans",
+    dateOfBirth: "2014-02-11",
+    gender: "Female",
+    category: "Junior",
+    ageGroup: "U13",
+    email: "ruby.evans@example.com",
+    phone: "0400 100 003",
+    address: "20 Example Street, Bald Hills QLD 4036",
+    status: "Active"
+  },
+  {
+    id: "M004",
+    firstName: "Harriet",
+    lastName: "Brown",
+    dateOfBirth: "2014-06-27",
+    gender: "Female",
+    category: "Junior",
+    ageGroup: "U13",
+    email: "harriet.brown@example.com",
+    phone: "0400 100 004",
+    address: "30 Example Street, Bald Hills QLD 4036",
+    status: "Active"
+  },
+  {
+    id: "M005",
+    firstName: "Noah",
+    lastName: "Wilson",
+    dateOfBirth: "2013-11-14",
+    gender: "Male",
+    category: "Junior",
+    ageGroup: "U14",
+    email: "noah.wilson@example.com",
+    phone: "0400 100 005",
+    address: "30 Example Street, Bald Hills QLD 4036",
+    status: "Active"
+  },
+  {
+    id: "M006",
+    firstName: "Chloe",
+    lastName: "Martin",
+    dateOfBirth: "2014-01-30",
+    gender: "Female",
+    category: "Junior",
+    ageGroup: "U13",
+    email: "chloe.martin@example.com",
+    phone: "0400 100 006",
+    address: "40 Example Street, Bald Hills QLD 4036",
+    status: "Active"
+  },
+  {
+    id: "M007",
+    firstName: "Isla",
+    lastName: "Taylor",
+    dateOfBirth: "2014-07-04",
+    gender: "Female",
+    category: "Junior",
+    ageGroup: "U13",
+    email: "isla.taylor@example.com",
+    phone: "0400 100 007",
+    address: "50 Example Street, Bald Hills QLD 4036",
+    status: "Active"
+  },
+  {
+    id: "M008",
+    firstName: "Liam",
+    lastName: "Nguyen",
+    dateOfBirth: "2008-05-21",
+    gender: "Male",
+    category: "Senior",
+    ageGroup: "Senior",
+    email: "liam.nguyen@example.com",
+    phone: "0400 100 008",
+    address: "60 Example Street, Bald Hills QLD 4036",
+    status: "Active"
+  },
+  {
+    id: "M009",
+    firstName: "Olivia",
+    lastName: "Smith",
+    dateOfBirth: "2007-09-18",
+    gender: "Female",
+    category: "Senior",
+    ageGroup: "Senior",
+    email: "olivia.smith@example.com",
+    phone: "0400 100 009",
+    address: "70 Example Street, Bald Hills QLD 4036",
+    status: "Active"
+  },
+  {
+    id: "M010",
+    firstName: "Alex",
+    lastName: "Smith",
+    dateOfBirth: "2007-09-18",
+    gender: "Male",
+    category: "Senior",
+    ageGroup: "Senior",
+    email: "alex.smith@example.com",
+    phone: "0400 100 010",
+    address: "70 Example Street, Bald Hills QLD 4036",
+    status: "Active"
+  },
+  {
+    id: "M011",
+    firstName: "Ethan",
+    lastName: "Johnson",
+    dateOfBirth: "1988-04-12",
+    gender: "Male",
+    category: "Senior",
+    ageGroup: "Over 35",
+    email: "ethan.johnson@example.com",
+    phone: "0400 100 011",
+    address: "80 Example Street, Bald Hills QLD 4036",
+    status: "Active"
+  },
+  {
+    id: "M012",
+    firstName: "Sophie",
+    lastName: "Williams",
+    dateOfBirth: "1995-12-03",
+    gender: "Female",
+    category: "Senior",
+    ageGroup: "Senior",
+    email: "sophie.williams@example.com",
+    phone: "0400 100 012",
+    address: "90 Example Street, Bald Hills QLD 4036",
+    status: "Active"
+  },
+  {
+    id: "M013",
+    firstName: "Jack",
+    lastName: "Brown",
+    dateOfBirth: "1982-08-19",
+    gender: "Male",
+    category: "Senior",
+    ageGroup: "Over 35",
+    email: "jack.brown@example.com",
+    phone: "0400 100 013",
+    address: "100 Example Street, Bald Hills QLD 4036",
+    status: "Active"
+  },
+  {
+    id: "M014",
+    firstName: "Ava",
+    lastName: "Lee",
+    dateOfBirth: "2015-10-22",
+    gender: "Female",
+    category: "Junior",
+    ageGroup: "U12",
+    email: "ava.lee@example.com",
+    phone: "0400 100 014",
+    address: "110 Example Street, Bald Hills QLD 4036",
+    status: "Active"
+  },
+  {
+    id: "M015",
+    firstName: "Daniel",
+    lastName: "Kim",
+    dateOfBirth: "2012-01-16",
+    gender: "Male",
+    category: "Junior",
+    ageGroup: "U15",
+    email: "daniel.kim@example.com",
+    phone: "0400 100 015",
+    address: "120 Example Street, Bald Hills QLD 4036",
+    status: "Active"
+  },
+  {
+    id: "M016",
+    firstName: "Jayden",
+    lastName: "Marsh",
+    dateOfBirth: "2009-05-04",
+    gender: "Male",
+    category: "Senior",
+    ageGroup: "Senior",
+    email: "jayden.marsh@example.com",
+    phone: "0400 100 016",
+    address: "130 Example Street, Bald Hills QLD 4036",
+    status: "Active",
+    guardianRuleStatus: "Unresolved"
   }
 ];
 
 
 const guardians = [
   {
-    guardianId: 1,
-    firstName: "Sarah",
-    lastName: "Smith",
-    mobile: "0410 000 001",
-    email: "sarah.smith@example.com",
-    address: "Brisbane"
+    id: "G001",
+    firstName: "Jordan",
+    lastName: "Carter",
+    email: "jordan.carter@example.com",
+    phone: "0410 200 001",
+    address: "10 Example Street, Bald Hills QLD 4036"
   },
   {
-    guardianId: 2,
-    firstName: "Michael",
+    id: "G002",
+    firstName: "Casey",
+    lastName: "Evans",
+    email: "casey.evans@example.com",
+    phone: "0410 200 002",
+    address: "20 Example Street, Bald Hills QLD 4036"
+  },
+  {
+    id: "G003",
+    firstName: "Morgan",
     lastName: "Brown",
-    mobile: "0410 000 002",
-    email: "michael.brown@example.com",
-    address: "Bald Hills"
+    email: "morgan.brown@example.com",
+    phone: "0410 200 003",
+    address: "30 Example Street, Bald Hills QLD 4036"
   },
   {
-    guardianId: 3,
-    firstName: "Emily",
-    lastName: "Jones",
-    mobile: "0410 000 003",
-    email: "emily.jones@example.com",
-    address: "Bracken Ridge"
+    id: "G004",
+    firstName: "Taylor",
+    lastName: "Martin",
+    email: "taylor.martin@example.com",
+    phone: "0410 200 004",
+    address: "40 Example Street, Bald Hills QLD 4036"
   },
   {
-    guardianId: 4,
-    firstName: "David",
-    lastName: "Wilson",
-    mobile: "0410 000 004",
-    email: "david.wilson@example.com",
-    address: "Aspley"
-  },
-  {
-    guardianId: 5,
-    firstName: "Rachel",
+    id: "G005",
+    firstName: "Riley",
     lastName: "Taylor",
-    mobile: "0410 000 005",
-    email: "rachel.taylor@example.com",
-    address: "Carseldine"
+    email: "riley.taylor@example.com",
+    phone: "0410 200 005",
+    address: "50 Example Street, Bald Hills QLD 4036"
   },
   {
-    guardianId: 6,
-    firstName: "James",
+    id: "G006",
+    firstName: "Sam",
     lastName: "Lee",
-    mobile: "0410 000 006",
-    email: "james.lee.parent@example.com",
-    address: "Albany Creek"
-  },
-  {
-    guardianId: 7,
-    firstName: "Laura",
-    lastName: "Anderson",
-    mobile: "0410 000 007",
-    email: "laura.anderson@example.com",
-    address: "Mango Hill"
+    email: "sam.lee@example.com",
+    phone: "0410 200 006",
+    address: "110 Example Street, Bald Hills QLD 4036"
   }
 ];
 
 
 const guardianMembers = [
-  // Sarah Smith is guardian of two juniors
   {
-    guardianId: 1,
-    memberId: 1,
-    relationship: "Mother"
+    id: "GM001",
+    guardianId: "G001",
+    memberId: "M001",
+    relationship: "Parent"
   },
   {
-    guardianId: 1,
-    memberId: 2,
-    relationship: "Mother"
-  },
-
-  {
-    guardianId: 2,
-    memberId: 3,
-    relationship: "Father"
-  },
-
-  {
-    guardianId: 3,
-    memberId: 4,
-    relationship: "Mother"
-  },
-
-  {
-    guardianId: 4,
-    memberId: 5,
-    relationship: "Father"
-  },
-
-  {
-    guardianId: 5,
-    memberId: 6,
-    relationship: "Mother"
-  },
-
-  {
-    guardianId: 6,
-    memberId: 9,
-    relationship: "Father"
+    id: "GM002",
+    guardianId: "G001",
+    memberId: "M002",
+    relationship: "Parent"
   },
   {
-    guardianId: 6,
-    memberId: 10,
-    relationship: "Father"
+    id: "GM003",
+    guardianId: "G002",
+    memberId: "M003",
+    relationship: "Parent"
   },
-
   {
-    guardianId: 7,
-    memberId: 11,
-    relationship: "Mother"
+    id: "GM004",
+    guardianId: "G003",
+    memberId: "M004",
+    relationship: "Parent"
+  },
+  {
+    id: "GM005",
+    guardianId: "G003",
+    memberId: "M005",
+    relationship: "Parent"
+  },
+  {
+    id: "GM006",
+    guardianId: "G004",
+    memberId: "M006",
+    relationship: "Parent"
+  },
+  {
+    id: "GM007",
+    guardianId: "G005",
+    memberId: "M007",
+    relationship: "Parent"
+  },
+  {
+    id: "GM008",
+    guardianId: "G006",
+    memberId: "M014",
+    relationship: "Parent"
   }
 ];
 
 
 const registrations = [
   {
-    registrationId: 1,
-    memberId: 1,
-    season: "2026",
-    ageGroup: "U13 Girls",
+    id: "R001",
+    memberId: "M001",
+    season: 2026,
+    ageGroup: "U13",
     status: "Complete"
   },
   {
-    registrationId: 2,
-    memberId: 2,
-    season: "2026",
-    ageGroup: "U13 Girls",
+    id: "R002",
+    memberId: "M002",
+    season: 2026,
+    ageGroup: "U9",
     status: "Complete"
   },
   {
-    registrationId: 3,
-    memberId: 3,
-    season: "2026",
-    ageGroup: "U13 Boys",
+    id: "R003",
+    memberId: "M003",
+    season: 2026,
+    ageGroup: "U13",
     status: "Complete"
   },
   {
-    registrationId: 4,
-    memberId: 4,
-    season: "2026",
-    ageGroup: "U13 Girls",
+    id: "R004",
+    memberId: "M004",
+    season: 2026,
+    ageGroup: "U13",
     status: "Complete"
   },
   {
-    registrationId: 5,
-    memberId: 5,
-    season: "2026",
-    ageGroup: "U15 Boys",
+    id: "R005",
+    memberId: "M005",
+    season: 2026,
+    ageGroup: "U14",
     status: "Complete"
   },
   {
-    registrationId: 6,
-    memberId: 6,
-    season: "2026",
-    ageGroup: "U15 Girls",
+    id: "R006",
+    memberId: "M006",
+    season: 2026,
+    ageGroup: "U13",
     status: "Complete"
   },
   {
-    registrationId: 7,
-    memberId: 7,
-    season: "2026",
-    ageGroup: "U18 Boys",
+    id: "R007",
+    memberId: "M007",
+    season: 2026,
+    ageGroup: "U13",
     status: "Complete"
   },
   {
-    registrationId: 8,
-    memberId: 8,
-    season: "2026",
-    ageGroup: "U18 Girls",
-    status: "Complete"
-  },
-
-  // Duplicate-name members
-  {
-    registrationId: 9,
-    memberId: 9,
-    season: "2026",
-    ageGroup: "U13 Boys",
+    id: "R008",
+    memberId: "M008",
+    season: 2026,
+    ageGroup: "Senior",
     status: "Complete"
   },
   {
-    registrationId: 10,
-    memberId: 10,
-    season: "2026",
-    ageGroup: "U13 Boys",
+    id: "R009",
+    memberId: "M009",
+    season: 2026,
+    ageGroup: "Senior",
+    status: "Complete"
+  },
+  {
+    id: "R010",
+    memberId: "M010",
+    season: 2026,
+    ageGroup: "Senior",
+    status: "Complete"
+  },
+  {
+    id: "R011",
+    memberId: "M011",
+    season: 2026,
+    ageGroup: "Over 35",
+    status: "Complete"
+  },
+  {
+    id: "R012",
+    memberId: "M012",
+    season: 2026,
+    ageGroup: "Senior",
+    status: "Complete"
+  },
+  {
+    id: "R013",
+    memberId: "M013",
+    season: 2026,
+    ageGroup: "Over 35",
+    status: "Complete"
+  },
+  {
+    id: "R014",
+    memberId: "M014",
+    season: 2026,
+    ageGroup: "U12",
+    status: "Complete"
+  },
+  {
+    id: "R015",
+    memberId: "M015",
+    season: 2026,
+    ageGroup: "U15",
     status: "Started"
   },
-
   {
-    registrationId: 11,
-    memberId: 11,
-    season: "2026",
-    ageGroup: "U12 Girls",
-    status: "Complete"
-  },
-
-  // Senior - no guardian required
-  {
-    registrationId: 12,
-    memberId: 12,
-    season: "2026",
-    ageGroup: "Senior Men",
-    status: "Complete"
-  },
-
-  // Previous season example for registration history
-  {
-    registrationId: 13,
-    memberId: 1,
-    season: "2025",
-    ageGroup: "U12 Girls",
-    status: "Complete"
-  },
-
-  {
-    registrationId: 14,
-    memberId: 5,
-    season: "2025",
-    ageGroup: "U14 Boys",
-    status: "Withdrawn"
+    id: "R016",
+    memberId: "M016",
+    season: 2026,
+    ageGroup: "Senior",
+    status: "Started",
+    guardianRuleStatus: "Unresolved"
   }
 ];
 
 
 const teams = [
   {
-    teamId: 1,
-    teamName: "U13G Navy",
-    season: "2026",
-    ageGroup: "U13 Girls"
+    id: "T001",
+    season: 2026,
+    name: "U13G Navy",
+    ageGroup: "U13",
+    gender: "Female"
   },
   {
-    teamId: 2,
-    teamName: "U13G Gold",
-    season: "2026",
-    ageGroup: "U13 Girls"
+    id: "T002",
+    season: 2026,
+    name: "U14 Boys",
+    ageGroup: "U14",
+    gender: "Male"
   },
   {
-    teamId: 3,
-    teamName: "U13B Navy",
-    season: "2026",
-    ageGroup: "U13 Boys"
+    id: "T003",
+    season: 2026,
+    name: "U15 Boys",
+    ageGroup: "U15",
+    gender: "Male"
   },
   {
-    teamId: 4,
-    teamName: "U15 Boys",
-    season: "2026",
-    ageGroup: "U15 Boys"
+    id: "T004",
+    season: 2026,
+    name: "Senior Men",
+    ageGroup: "Senior",
+    gender: "Male"
   },
   {
-    teamId: 5,
-    teamName: "U15 Girls",
-    season: "2026",
-    ageGroup: "U15 Girls"
+    id: "T005",
+    season: 2026,
+    name: "Senior Women",
+    ageGroup: "Senior",
+    gender: "Female"
   },
   {
-    // Empty team for empty-roster testing
-    teamId: 6,
-    teamName: "U18 Girls",
-    season: "2026",
-    ageGroup: "U18 Girls"
+    id: "T006",
+    season: 2026,
+    name: "Over 35 Men",
+    ageGroup: "Over 35",
+    gender: "Male"
   }
 ];
 
 
 const teamMembers = [
-  // U13G Navy
   {
-    teamId: 1,
-    memberId: 1
+    id: "TM001",
+    teamId: "T001",
+    memberId: "M001",
+    registrationId: "R001"
   },
   {
-    teamId: 1,
-    memberId: 2
-  },
-
-  // U13G Gold
-  {
-    teamId: 2,
-    memberId: 4
-  },
-
-  // U13B Navy
-  {
-    teamId: 3,
-    memberId: 3
+    id: "TM002",
+    teamId: "T001",
+    memberId: "M003",
+    registrationId: "R003"
   },
   {
-    teamId: 3,
-    memberId: 9
+    id: "TM003",
+    teamId: "T001",
+    memberId: "M004",
+    registrationId: "R004"
   },
-
-  // U15 Boys
   {
-    teamId: 4,
-    memberId: 5
+    id: "TM004",
+    teamId: "T001",
+    memberId: "M006",
+    registrationId: "R006"
   },
-
-  // U15 Girls
   {
-    teamId: 5,
-    memberId: 6
+    id: "TM005",
+    teamId: "T001",
+    memberId: "M007",
+    registrationId: "R007"
+  },
+  {
+    id: "TM006",
+    teamId: "T002",
+    memberId: "M005",
+    registrationId: "R005"
+  },
+  {
+    id: "TM007",
+    teamId: "T003",
+    memberId: "M015",
+    registrationId: "R015"
+  },
+  {
+    id: "TM008",
+    teamId: "T004",
+    memberId: "M008",
+    registrationId: "R008"
+  },
+  {
+    id: "TM009",
+    teamId: "T004",
+    memberId: "M010",
+    registrationId: "R010"
+  },
+  {
+    id: "TM010",
+    teamId: "T005",
+    memberId: "M009",
+    registrationId: "R009"
+  },
+  {
+    id: "TM011",
+    teamId: "T005",
+    memberId: "M012",
+    registrationId: "R012"
+  },
+  {
+    id: "TM012",
+    teamId: "T006",
+    memberId: "M011",
+    registrationId: "R011"
+  },
+  {
+    id: "TM013",
+    teamId: "T006",
+    memberId: "M013",
+    registrationId: "R013"
   }
-
-  // Team 6 intentionally has no members
 ];

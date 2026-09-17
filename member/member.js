@@ -186,6 +186,28 @@ function showMemberDetails(member, notice) {
     ["Status", member.status]
   ];
 
+  const guardianLinks = getStore("guardianMembers").filter(function (link) {
+    return link.memberId === member.memberId;
+  });
+
+  guardianLinks.forEach(function (link) {
+    const guardian = getStore("guardians").find(function (item) {
+      return item.guardianId === link.guardianId;
+    });
+
+    if (guardian) {
+      detailsToShow.push([
+        "Guardian",
+        guardian.firstName + " " + guardian.lastName
+      ]);
+
+      detailsToShow.push([
+        "Guardian Mobile",
+        guardian.mobile
+      ]);
+    }
+  });
+
   detailsToShow.forEach(function (item) {
     const term = document.createElement("dt");
     term.textContent = item[0];
@@ -245,16 +267,16 @@ function showMemberEditForm(member) {
   form.className = "edit-member-form";
   form.innerHTML =
     '<div class="field-grid two-columns">' +
-      '<div class="field"><label for="edit-first-name">First name</label><input id="edit-first-name" name="firstName" type="text" autocomplete="given-name"></div>' +
-      '<div class="field"><label for="edit-last-name">Last name</label><input id="edit-last-name" name="lastName" type="text" autocomplete="family-name"></div>' +
+    '<div class="field"><label for="edit-first-name">First name</label><input id="edit-first-name" name="firstName" type="text" autocomplete="given-name"></div>' +
+    '<div class="field"><label for="edit-last-name">Last name</label><input id="edit-last-name" name="lastName" type="text" autocomplete="family-name"></div>' +
     '</div>' +
     '<div class="field-grid two-columns">' +
-      '<div class="field"><label for="edit-date-of-birth">Date of birth</label><input id="edit-date-of-birth" name="dateOfBirth" type="date"></div>' +
-      '<div class="field"><label for="edit-gender">Gender</label><select id="edit-gender" name="gender"><option value="">Select gender (optional)</option><option value="Female">Female</option><option value="Male">Male</option><option value="Non-binary">Non-binary</option><option value="Prefer not to say">Prefer not to say</option></select></div>' +
+    '<div class="field"><label for="edit-date-of-birth">Date of birth</label><input id="edit-date-of-birth" name="dateOfBirth" type="date"></div>' +
+    '<div class="field"><label for="edit-gender">Gender</label><select id="edit-gender" name="gender"><option value="">Select gender (optional)</option><option value="Female">Female</option><option value="Male">Male</option><option value="Non-binary">Non-binary</option><option value="Prefer not to say">Prefer not to say</option></select></div>' +
     '</div>' +
     '<div class="field-grid two-columns">' +
-      '<div class="field"><label for="edit-phone">Phone</label><input id="edit-phone" name="phone" type="tel" autocomplete="tel"></div>' +
-      '<div class="field"><label for="edit-email">Email</label><input id="edit-email" name="email" type="email" autocomplete="email"></div>' +
+    '<div class="field"><label for="edit-phone">Phone</label><input id="edit-phone" name="phone" type="tel" autocomplete="tel"></div>' +
+    '<div class="field"><label for="edit-email">Email</label><input id="edit-email" name="email" type="email" autocomplete="email"></div>' +
     '</div>' +
     '<p class="form-message" aria-live="polite"></p>' +
     '<div class="detail-actions"><button class="secondary-button" type="button">Cancel</button><button class="primary-button" type="submit">Save changes</button></div>';
