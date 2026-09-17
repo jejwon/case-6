@@ -230,6 +230,66 @@ function refreshMemberSearchResults() {
   }
 }
 
+function createRegistrationHistory(member) {
+  const history = document.createElement("section");
+  history.className = "registration-history";
+
+  const heading = document.createElement("h4");
+  heading.textContent = "Registration History";
+  history.appendChild(heading);
+
+  const registrations = getRegistrationsByMember(member.memberId).slice().sort(function (first, second) {
+    return String(second.season).localeCompare(String(first.season), undefined, {
+      numeric: true
+    });
+  });
+
+  if (registrations.length === 0) {
+    const emptyState = document.createElement("p");
+    emptyState.className = "history-empty-state";
+    emptyState.textContent = "No registration history found for this member.";
+    history.appendChild(emptyState);
+    return history;
+  }
+
+  const tableWrap = document.createElement("div");
+  tableWrap.className = "history-table-wrap";
+  const table = document.createElement("table");
+  const tableHead = document.createElement("thead");
+  const headingRow = document.createElement("tr");
+
+  ["Season", "Age Group", "Status"].forEach(function (label) {
+    const headingCell = document.createElement("th");
+    headingCell.scope = "col";
+    headingCell.textContent = label;
+    headingRow.appendChild(headingCell);
+  });
+
+  tableHead.appendChild(headingRow);
+  table.appendChild(tableHead);
+
+  const tableBody = document.createElement("tbody");
+  registrations.forEach(function (registration) {
+    const row = document.createElement("tr");
+    row.appendChild(createCell(registration.season));
+    row.appendChild(createCell(registration.ageGroup));
+
+    const statusCell = document.createElement("td");
+    const status = document.createElement("span");
+    status.className = "status registration-status-" + String(registration.status).toLowerCase();
+    status.textContent = registration.status;
+    statusCell.appendChild(status);
+    row.appendChild(statusCell);
+
+    tableBody.appendChild(row);
+  });
+
+  table.appendChild(tableBody);
+  tableWrap.appendChild(table);
+  history.appendChild(tableWrap);
+  return history;
+}
+
 function showMemberDetails(member, notice) {
   const details = document.querySelector("#member-details");
   if (!details) {
@@ -282,6 +342,8 @@ function showMemberDetails(member, notice) {
     contact.append(term, definition);
   });
 
+  const registrationHistory = createRegistrationHistory(member);
+
   const actions = document.createElement("div");
   actions.className = "detail-actions";
   const editButton = document.createElement("button");
@@ -307,7 +369,7 @@ function showMemberDetails(member, notice) {
     actions.appendChild(deactivateButton);
   }
 
-  details.append(title, id, contact, actions);
+  details.append(title, id, contact, registrationHistory, actions);
 
   if (notice) {
     const message = document.createElement("p");
