@@ -23,9 +23,56 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function isValidGender(gender) {
+  return ["Male", "Female"].includes(String(gender || "").trim());
+}
+
+function normaliseDateOfBirth(dateValue) {
+  const value = String(dateValue || "").trim();
+  const match = /^(?:(\d{4})-(\d{2})-(\d{2})|(\d{2})\/(\d{2})\/(\d{4}))$/.exec(value);
+
+  if (!match) {
+    return null;
+  }
+
+  const year = Number(match[1] || match[6]);
+  const month = Number(match[2] || match[5]);
+  const day = Number(match[3] || match[4]);
+  const date = new Date(year, month - 1, day);
+
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+    return null;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (date > today) {
+    return null;
+  }
+
+  return String(year).padStart(4, "0") + "-" +
+    String(month).padStart(2, "0") + "-" +
+    String(day).padStart(2, "0");
+}
+
+function hasRequiredMemberDetails(memberData) {
+  return ["firstName", "lastName", "dateOfBirth", "gender", "phone"].every(function (field) {
+    return String(memberData[field] || "").trim() !== "";
+  });
+}
+
 function addMember(memberData) {
   const existingMembers = getAllMembers();
   const email = String(memberData.email || "").trim();
+  const dateOfBirth = normaliseDateOfBirth(memberData.dateOfBirth);
+
+  if (!hasRequiredMemberDetails(memberData) || !isValidGender(memberData.gender)) {
+    throw new Error("Complete all required member fields and select a valid gender.");
+  }
+
+  if (!dateOfBirth) {
+    throw new Error("Enter a valid date of birth.");
+  }
 
   if (email && !isValidEmail(email)) {
     throw new Error("Enter a valid email address or leave the email field blank.");
@@ -39,7 +86,7 @@ function addMember(memberData) {
     memberId: nextId,
     firstName: String(memberData.firstName || "").trim(),
     lastName: String(memberData.lastName || "").trim(),
-    dateOfBirth: memberData.dateOfBirth,
+    dateOfBirth: dateOfBirth,
     gender: String(memberData.gender || "").trim(),
     phone: String(memberData.phone || "").trim(),
     email: email,
@@ -62,6 +109,25 @@ function updateMember(memberId, updatedFields) {
   });
 
   if (memberIndex === -1) {
+    return false;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(updatedFields, "dateOfBirth")) {
+    const dateOfBirth = normaliseDateOfBirth(updatedFields.dateOfBirth);
+    if (!dateOfBirth) {
+      return false;
+    }
+    updatedFields = Object.assign({}, updatedFields, { dateOfBirth: dateOfBirth });
+  }
+
+  const requiredFields = ["firstName", "lastName", "dateOfBirth", "gender", "phone"];
+  const hasInvalidRequiredField = requiredFields.some(function (field) {
+    return Object.prototype.hasOwnProperty.call(updatedFields, field) &&
+      String(updatedFields[field] || "").trim() === "";
+  });
+
+  if (hasInvalidRequiredField ||
+      (Object.prototype.hasOwnProperty.call(updatedFields, "gender") && !isValidGender(updatedFields.gender))) {
     return false;
   }
 
@@ -267,15 +333,15 @@ function showMemberEditForm(member) {
   form.className = "edit-member-form";
   form.innerHTML =
     '<div class="field-grid two-columns">' +
-    '<div class="field"><label for="edit-first-name">First name</label><input id="edit-first-name" name="firstName" type="text" autocomplete="given-name"></div>' +
-    '<div class="field"><label for="edit-last-name">Last name</label><input id="edit-last-name" name="lastName" type="text" autocomplete="family-name"></div>' +
+    '<div class="field"><label for="edit-first-name">First name <span aria-hidden="true">*</span></label><input id="edit-first-name" name="firstName" type="text" autocomplete="given-name" required></div>' +
+    '<div class="field"><label for="edit-last-name">Last name <span aria-hidden="true">*</span></label><input id="edit-last-name" name="lastName" type="text" autocomplete="family-name" required></div>' +
     '</div>' +
     '<div class="field-grid two-columns">' +
-    '<div class="field"><label for="edit-date-of-birth">Date of birth</label><input id="edit-date-of-birth" name="dateOfBirth" type="date"></div>' +
-    '<div class="field"><label for="edit-gender">Gender</label><select id="edit-gender" name="gender"><option value="">Select gender (optional)</option><option value="Female">Female</option><option value="Male">Male</option><option value="Non-binary">Non-binary</option><option value="Prefer not to say">Prefer not to say</option></select></div>' +
+    '<div class="field"><label for="edit-date-of-birth">Date of birth <span aria-hidden="true">*</span></label><input id="edit-date-of-birth" name="dateOfBirth" type="date" required></div>' +
+    '<div class="field"><label for="edit-gender">Gender <span aria-hidden="true">*</span></label><select id="edit-gender" name="gender" required><option value="">Select gender</option><option value="Male">Male</option><option value="Female">Female</option></select></div>' +
     '</div>' +
     '<div class="field-grid two-columns">' +
-    '<div class="field"><label for="edit-phone">Phone</label><input id="edit-phone" name="phone" type="tel" autocomplete="tel"></div>' +
+    '<div class="field"><label for="edit-phone">Phone <span aria-hidden="true">*</span></label><input id="edit-phone" name="phone" type="tel" autocomplete="tel" required></div>' +
     '<div class="field"><label for="edit-email">Email</label><input id="edit-email" name="email" type="email" autocomplete="email"></div>' +
     '</div>' +
     '<p class="form-message" aria-live="polite"></p>' +
@@ -288,7 +354,6 @@ function showMemberEditForm(member) {
   form.elements.phone.value = member.phone || "";
   form.elements.email.value = member.email || "";
   form.elements.dateOfBirth.max = new Date().toISOString().slice(0, 10);
-
   form.querySelector(".secondary-button").addEventListener("click", function () {
     showMemberDetails(getMemberById(member.memberId));
   });
@@ -310,7 +375,7 @@ function showMemberEditForm(member) {
 
     if (!updated) {
       const message = form.querySelector(".form-message");
-      message.textContent = "Member changes could not be saved. Check the email address.";
+      message.textContent = "Member changes could not be saved. Check required fields, date of birth and email.";
       message.className = "form-message error";
       return;
     }
@@ -376,16 +441,16 @@ function initialiseMemberSearchPage() {
 }
 
 function initialiseMemberNavigation() {
-  const toggle = document.querySelector(".nav-group-toggle");
-  const submenu = document.querySelector(".nav-submenu");
-  if (!toggle || !submenu) {
-    return;
-  }
+  document.querySelectorAll(".nav-group-toggle").forEach(function (toggle) {
+    toggle.addEventListener("click", function () {
+      const submenu = document.getElementById(toggle.getAttribute("aria-controls"));
+      const isExpanded = toggle.getAttribute("aria-expanded") === "true";
 
-  toggle.addEventListener("click", function () {
-    const isExpanded = toggle.getAttribute("aria-expanded") === "true";
-    toggle.setAttribute("aria-expanded", String(!isExpanded));
-    submenu.hidden = isExpanded;
+      toggle.setAttribute("aria-expanded", String(!isExpanded));
+      if (submenu) {
+        submenu.hidden = isExpanded;
+      }
+    });
   });
 }
 

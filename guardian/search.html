@@ -9,20 +9,22 @@
   <body>
     <div class="app-shell">
       <aside class="sidebar" aria-label="Main navigation">
-        <a class="brand" href="index.html">WPFC<span>Admin</span></a>
+        <a class="brand" href="../index.html">WPFC<span>Admin</span></a>
 
         <nav>
           <a class="nav-group-link" href="../index.html">Dashboard</a>
 
-          <button
-            class="nav-group-toggle"
-            type="button"
-            aria-expanded="true"
-            aria-controls="guardian-management-menu">
-            Guardian Management
-          </button>
+          <details class="nav-group">
+            <summary class="nav-group-toggle">Member Management</summary>
+            <div class="nav-submenu">
+              <a class="nav-subitem" href="../member/index.html">Add New Member</a>
+              <a class="nav-subitem" href="../member/search.html">Search Members</a>
+            </div>
+          </details>
 
-          <div id="guardian-management-menu" class="nav-submenu">
+          <details class="nav-group" open>
+            <summary class="nav-group-toggle">Guardian Management</summary>
+            <div class="nav-submenu">
             <a class="nav-subitem" href="index.html">
               Add Guardian
             </a>
@@ -33,7 +35,15 @@
               aria-current="page">
               Search Guardians
             </a>
-          </div>
+            </div>
+          </details>
+
+          <details class="nav-group">
+            <summary class="nav-group-toggle">Registration Management</summary>
+            <div class="nav-submenu">
+              <a class="nav-subitem" href="../registration/index.html">Manage Registrations</a>
+            </div>
+          </details>
         </nav>
       </aside>
 

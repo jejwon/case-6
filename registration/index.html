@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Warrigal Park FC | Season Registration</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="../index.html">WPFC<span>Admin</span></a>
+        <nav>
+          <button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="member-management-menu">
+            Member Management
+          </button>
+          <div id="member-management-menu" class="nav-submenu">
+            <a class="nav-subitem" href="../member/index.html">Add New Member</a>
+            <a class="nav-subitem" href="../member/search.html">Search Members</a>
+          </div>
+          <button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="guardian-management-menu">
+            Guardian Management
+          </button>
+          <div id="guardian-management-menu" class="nav-submenu">
+            <a class="nav-subitem" href="../guardian/index.html">Add Guardian</a>
+            <a class="nav-subitem" href="../guardian/search.html">Search Guardians</a>
+          </div>
+          <button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="registration-management-menu">
+            Registration Management
+          </button>
+          <div id="registration-management-menu" class="nav-submenu">
+            <a class="nav-subitem active" href="index.html" aria-current="page">Manage Registrations</a>
+          </div>
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Warrigal Park Football Club</p>
+            <h1>Season Registration</h1>
+          </div>
+          <div class="user-label">Registrar</div>
+        </header>
+
+        <div class="content-grid">
+          <section class="panel form-panel" aria-labelledby="create-registration-heading">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Registration Management</p>
+                <h2 id="create-registration-heading">Create Registration</h2>
+              </div>
+            </div>
+            <form id="create-registration-form">
+              <div class="field">
+                <label for="registration-member">Member <span aria-hidden="true">*</span></label>
+                <select id="registration-member" name="memberId" required>
+                  <option value="" selected>Select a member</option>
+                </select>
+              </div>
+              <div class="field-grid two-columns">
+                <div class="field">
+                  <label for="registration-season">Season <span aria-hidden="true">*</span></label>
+                  <input id="registration-season" name="season" type="text" required>
+                </div>
+                <div class="field">
+                  <label for="registration-age-group">Age group</label>
+                  <input id="registration-age-group" name="ageGroup" type="text" readonly aria-readonly="true">
+                </div>
+              </div>
+              <p id="create-registration-message" class="form-message" aria-live="polite"></p>
+              <div class="form-actions">
+                <button class="secondary-button" type="reset">Clear form</button>
+                <button class="primary-button" type="submit">Create Registration</button>
+              </div>
+            </form>
+          </section>
+
+          <aside class="panel details-panel" aria-labelledby="registration-details-heading">
+            <p class="eyebrow">Selected registration</p>
+            <h2 id="registration-details-heading">Registration details</h2>
+            <div id="registration-details" class="registration-details">
+              <p>Select a registration from the list to update it or withdraw it.</p>
+            </div>
+          </aside>
+        </div>
+
+        <section class="panel directory-panel" aria-labelledby="registration-list-heading">
+          <div class="directory-heading">
+            <div>
+              <p class="eyebrow">Records</p>
+              <h2 id="registration-list-heading">Registrations</h2>
+            </div>
+            <div class="summary-card" aria-label="Registration summary">
+              <p>Total registrations</p>
+              <strong id="total-registrations">0</strong>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Member</th>
+                  <th scope="col">Season</th>
+                  <th scope="col">Age group</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody id="registration-list"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="../team/mockdata.js"></script>
+    <script src="../data.js"></script>
+    <script src="../registration.js"></script>
+  </body>
+</html>

@@ -458,7 +458,22 @@ function showGuardianEditForm(guardian) {
   details.appendChild(form);
 }
 
+function initialiseGuardianNavigation() {
+  document.querySelectorAll(".nav-group-toggle").forEach(function (toggle) {
+    toggle.addEventListener("click", function () {
+      const submenu = document.getElementById(toggle.getAttribute("aria-controls"));
+      const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+
+      toggle.setAttribute("aria-expanded", String(!isExpanded));
+      if (submenu) {
+        submenu.hidden = isExpanded;
+      }
+    });
+  });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
+  initialiseGuardianNavigation();
   initialiseGuardianPage();
   initialiseGuardianLink();
   initialiseGuardianSearchPage();
