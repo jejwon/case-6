@@ -376,16 +376,16 @@ function initialiseMemberSearchPage() {
 }
 
 function initialiseMemberNavigation() {
-  const toggle = document.querySelector(".nav-group-toggle");
-  const submenu = document.querySelector(".nav-submenu");
-  if (!toggle || !submenu) {
-    return;
-  }
+  document.querySelectorAll(".nav-group-toggle").forEach(function (toggle) {
+    toggle.addEventListener("click", function () {
+      const submenu = document.getElementById(toggle.getAttribute("aria-controls"));
+      const isExpanded = toggle.getAttribute("aria-expanded") === "true";
 
-  toggle.addEventListener("click", function () {
-    const isExpanded = toggle.getAttribute("aria-expanded") === "true";
-    toggle.setAttribute("aria-expanded", String(!isExpanded));
-    submenu.hidden = isExpanded;
+      toggle.setAttribute("aria-expanded", String(!isExpanded));
+      if (submenu) {
+        submenu.hidden = isExpanded;
+      }
+    });
   });
 }
 
