@@ -320,6 +320,39 @@ function showGuardianDetails(guardian) {
   details.appendChild(id);
   details.appendChild(information);
 
+  const linkedJuniorsHeading = document.createElement("h4");
+  linkedJuniorsHeading.textContent = "Linked Juniors";
+
+  const linkedJuniors = document.createElement("ul");
+
+  const guardianLinks = getStore("guardianMembers").filter(function (link) {
+    return link.guardianId === guardian.guardianId;
+  });
+
+  guardianLinks.forEach(function (link) {
+    const member = getStore("members").find(function (item) {
+      return item.memberId === link.memberId;
+    });
+
+    if (member) {
+      const junior = document.createElement("li");
+      junior.textContent =
+        member.firstName + " " + member.lastName;
+
+      linkedJuniors.appendChild(junior);
+    }
+  });
+
+  if (linkedJuniors.children.length === 0) {
+    const noJuniors = document.createElement("p");
+    noJuniors.textContent = "No juniors linked.";
+    details.appendChild(linkedJuniorsHeading);
+    details.appendChild(noJuniors);
+  } else {
+    details.appendChild(linkedJuniorsHeading);
+    details.appendChild(linkedJuniors);
+  }
+
   const actions = document.createElement("div");
   actions.className = "detail-actions";
 
