@@ -5,8 +5,10 @@ function getAllGuardians() {
 }
 
 function getGuardianById(guardianId) {
+  const id = String(guardianId || "").trim();
+
   return getAllGuardians().find(function (guardian) {
-    return guardian.guardianId === Number(guardianId);
+    return guardian.id === id;
   }) || null;
 }
 
@@ -14,7 +16,9 @@ function searchGuardiansByName(name) {
   const searchTerm = String(name || "").trim().toLowerCase();
 
   return getAllGuardians().filter(function (guardian) {
-    const fullName = (guardian.firstName + " " + guardian.lastName).toLowerCase();
+    const fullName =
+      (guardian.firstName + " " + guardian.lastName).toLowerCase();
+
     return fullName.includes(searchTerm);
   });
 }
@@ -22,16 +26,22 @@ function searchGuardiansByName(name) {
 function addGuardian(guardianData) {
   const guardians = getAllGuardians();
 
-  const nextId = Math.max.apply(null, guardians.map(function (guardian) {
-    return guardian.guardianId;
-  }).concat([0])) + 1;
+  const nextNumber = guardians.reduce(function (max, guardian) {
+    const match = String(guardian.id || "").match(/^G(\d+)$/);
+
+    if (!match) {
+      return max;
+    }
+
+    return Math.max(max, Number(match[1]));
+  }, 0) + 1;
 
   const guardian = {
-    guardianId: nextId,
+    id: "G" + String(nextNumber).padStart(3, "0"),
     firstName: String(guardianData.firstName || "").trim(),
     lastName: String(guardianData.lastName || "").trim(),
-    mobile: String(guardianData.mobile || "").trim(),
     email: String(guardianData.email || "").trim(),
+    phone: String(guardianData.phone || "").trim(),
     address: String(guardianData.address || "").trim()
   };
 
@@ -48,14 +58,15 @@ function updateGuardian(guardianId, updatedData) {
   const guardians = getAllGuardians();
 
   const guardianIndex = guardians.findIndex(function (guardian) {
-    return guardian.guardianId === Number(guardianId);
+    return guardian.id === String(guardianId);
   });
 
   if (guardianIndex === -1) {
     throw new Error("Guardian not found.");
   }
 
-  guardians[guardianIndex].mobile = String(updatedData.mobile || "").trim();
+  guardians[guardianIndex].phone =
+    String(updatedData.phone || "").trim();
 
   if (!saveStore("guardians", guardians)) {
     throw new Error("Guardian information could not be updated.");
@@ -68,8 +79,11 @@ function linkGuardianToMember(guardianId, memberId) {
   const guardians = getAllGuardians();
   const guardianMembers = getStore("guardianMembers");
 
+  const guardianIdString = String(guardianId).trim();
+  const memberIdString = String(memberId).trim();
+
   const guardianExists = guardians.some(function (guardian) {
-    return guardian.guardianId === Number(guardianId);
+    return guardian.id === guardianIdString;
   });
 
   if (!guardianExists) {
@@ -77,7 +91,7 @@ function linkGuardianToMember(guardianId, memberId) {
   }
 
   const memberExists = getStore("members").some(function (member) {
-    return member.memberId === Number(memberId);
+    return member.id === memberIdString;
   });
 
   if (!memberExists) {
@@ -86,8 +100,8 @@ function linkGuardianToMember(guardianId, memberId) {
 
   const alreadyLinked = guardianMembers.some(function (link) {
     return (
-      link.guardianId === Number(guardianId) &&
-      link.memberId === Number(memberId)
+      link.guardianId === guardianIdString &&
+      link.memberId === memberIdString
     );
   });
 
@@ -95,9 +109,21 @@ function linkGuardianToMember(guardianId, memberId) {
     return false;
   }
 
+  const nextLinkNumber = guardianMembers.reduce(function (max, link) {
+    const match = String(link.id || "").match(/^GM(\d+)$/);
+
+    if (!match) {
+      return max;
+    }
+
+    return Math.max(max, Number(match[1]));
+  }, 0) + 1;
+
   guardianMembers.push({
-    guardianId: Number(guardianId),
-    memberId: Number(memberId)
+    id: "GM" + String(nextLinkNumber).padStart(3, "0"),
+    guardianId: guardianIdString,
+    memberId: memberIdString,
+    relationship: "Parent"
   });
 
   if (!saveStore("guardianMembers", guardianMembers)) {
@@ -108,15 +134,18 @@ function linkGuardianToMember(guardianId, memberId) {
 }
 
 function getGuardiansForMember(memberId) {
-  const numericMemberId = Number(memberId);
+  const memberIdString = String(memberId).trim();
 
-  return getStore("guardianMembers").filter(function (link) {
-    return link.memberId === numericMemberId;
-  }).map(function (link) {
-    return getGuardianById(link.guardianId);
-  }).filter(function (guardian) {
-    return guardian !== null;
-  });
+  return getStore("guardianMembers")
+    .filter(function (link) {
+      return link.memberId === memberIdString;
+    })
+    .map(function (link) {
+      return getGuardianById(link.guardianId);
+    })
+    .filter(function (guardian) {
+      return guardian !== null;
+    });
 }
 
 function initialiseGuardianPage() {
@@ -139,7 +168,7 @@ function initialiseGuardianPage() {
       const guardian = addGuardian({
         firstName: document.querySelector("#first-name").value,
         lastName: document.querySelector("#last-name").value,
-        mobile: document.querySelector("#mobile").value,
+        phone: document.querySelector("#mobile").value,
         email: document.querySelector("#email").value,
         address: document.querySelector("#address").value
       });
@@ -147,12 +176,15 @@ function initialiseGuardianPage() {
       form.reset();
 
       const message = document.querySelector("#form-message");
+
       message.textContent =
-        "Guardian saved successfully. Guardian ID #" + guardian.guardianId + ".";
+        "Guardian saved successfully. Guardian ID #" + guardian.id + ".";
+
       message.className = "form-message success";
 
     } catch (error) {
       const message = document.querySelector("#form-message");
+
       message.textContent = error.message;
       message.className = "form-message error";
     }
@@ -176,25 +208,34 @@ function initialiseGuardianLink() {
     }
 
     try {
-      const guardianId = document.querySelector("#guardian-id").value;
-      const memberId = document.querySelector("#member-id").value;
+      const guardianId =
+        document.querySelector("#guardian-id").value;
 
-      const linked = linkGuardianToMember(guardianId, memberId);
+      const memberId =
+        document.querySelector("#member-id").value;
+
+      const linked = linkGuardianToMember(
+        guardianId,
+        memberId
+      );
 
       const message = document.querySelector("#link-message");
 
       if (linked) {
         message.textContent =
           "Guardian linked to junior successfully.";
+
         message.className = "form-message success";
       } else {
         message.textContent =
           "This guardian is already linked to this junior.";
+
         message.className = "form-message";
       }
 
     } catch (error) {
       const message = document.querySelector("#link-message");
+
       message.textContent = error.message;
       message.className = "form-message error";
     }
@@ -216,7 +257,9 @@ function renderGuardianList(guardianList) {
   }
 
   listBody.replaceChildren();
-  totalGuardians.textContent = getAllGuardians().length;
+
+  totalGuardians.textContent =
+    getAllGuardians().length;
 
   if (guardianList.length === 0) {
     const row = document.createElement("tr");
@@ -228,6 +271,7 @@ function renderGuardianList(guardianList) {
 
     row.appendChild(cell);
     listBody.appendChild(row);
+
     return;
   }
 
@@ -241,15 +285,19 @@ function renderGuardianList(guardianList) {
     nameCell.className = "guardian-name";
 
     row.appendChild(nameCell);
-    row.appendChild(createCell(guardian.mobile));
+    row.appendChild(createCell(guardian.phone));
     row.appendChild(createCell(guardian.email));
     row.appendChild(createCell(guardian.address));
 
     row.tabIndex = 0;
     row.setAttribute("role", "button");
+
     row.setAttribute(
       "aria-label",
-      "View " + guardian.firstName + " " + guardian.lastName
+      "View " +
+        guardian.firstName +
+        " " +
+        guardian.lastName
     );
 
     row.addEventListener("click", function () {
@@ -257,7 +305,10 @@ function renderGuardianList(guardianList) {
     });
 
     row.addEventListener("keydown", function (event) {
-      if (event.key === "Enter" || event.key === " ") {
+      if (
+        event.key === "Enter" ||
+        event.key === " "
+      ) {
         event.preventDefault();
         showGuardianDetails(guardian);
       }
@@ -268,13 +319,15 @@ function renderGuardianList(guardianList) {
 }
 
 function initialiseGuardianSearchPage() {
-  const searchInput = document.querySelector("#guardian-search");
+  const searchInput =
+    document.querySelector("#guardian-search");
 
   if (!searchInput) {
     return;
   }
 
   initialiseStorage();
+
   renderGuardianList(getAllGuardians());
 
   searchInput.addEventListener("input", function () {
@@ -285,7 +338,8 @@ function initialiseGuardianSearchPage() {
 }
 
 function showGuardianDetails(guardian) {
-  const details = document.querySelector("#guardian-details");
+  const details =
+    document.querySelector("#guardian-details");
 
   if (!details) {
     return;
@@ -294,12 +348,18 @@ function showGuardianDetails(guardian) {
   details.replaceChildren();
 
   const heading = document.createElement("h3");
+
   heading.textContent =
-    guardian.firstName + " " + guardian.lastName;
+    guardian.firstName +
+    " " +
+    guardian.lastName;
 
   const id = document.createElement("p");
+
   id.className = "detail-id";
-  id.textContent = "Guardian ID #" + guardian.guardianId;
+
+  id.textContent =
+    "Guardian ID #" + guardian.id;
 
   const information = document.createElement("dl");
 
@@ -307,7 +367,7 @@ function showGuardianDetails(guardian) {
   mobileLabel.textContent = "Mobile";
 
   const mobileValue = document.createElement("dd");
-  mobileValue.textContent = guardian.mobile;
+  mobileValue.textContent = guardian.phone;
 
   const emailLabel = document.createElement("dt");
   emailLabel.textContent = "Email";
@@ -323,8 +383,10 @@ function showGuardianDetails(guardian) {
 
   information.appendChild(mobileLabel);
   information.appendChild(mobileValue);
+
   information.appendChild(emailLabel);
   information.appendChild(emailValue);
+
   information.appendChild(addressLabel);
   information.appendChild(addressValue);
 
@@ -332,43 +394,62 @@ function showGuardianDetails(guardian) {
   details.appendChild(id);
   details.appendChild(information);
 
-  const linkedJuniorsHeading = document.createElement("h4");
-  linkedJuniorsHeading.textContent = "Linked Juniors";
+  const linkedJuniorsHeading =
+    document.createElement("h4");
 
-  const linkedJuniors = document.createElement("ul");
+  linkedJuniorsHeading.textContent =
+    "Linked Juniors";
 
-  const guardianLinks = getStore("guardianMembers").filter(function (link) {
-    return link.guardianId === guardian.guardianId;
-  });
+  const linkedJuniors =
+    document.createElement("ul");
 
-  guardianLinks.forEach(function (link) {
-    const member = getStore("members").find(function (item) {
-      return item.memberId === link.memberId;
+  const guardianLinks =
+    getStore("guardianMembers").filter(function (link) {
+      return link.guardianId === guardian.id;
     });
 
+  guardianLinks.forEach(function (link) {
+    const member =
+      getStore("members").find(function (item) {
+        return item.id === link.memberId;
+      });
+
     if (member) {
-      const junior = document.createElement("li");
+      const junior =
+        document.createElement("li");
+
       junior.textContent =
-        member.firstName + " " + member.lastName;
+        member.firstName +
+        " " +
+        member.lastName;
 
       linkedJuniors.appendChild(junior);
     }
   });
 
   if (linkedJuniors.children.length === 0) {
-    const noJuniors = document.createElement("p");
-    noJuniors.textContent = "No juniors linked.";
+    const noJuniors =
+      document.createElement("p");
+
+    noJuniors.textContent =
+      "No juniors linked.";
+
     details.appendChild(linkedJuniorsHeading);
     details.appendChild(noJuniors);
+
   } else {
     details.appendChild(linkedJuniorsHeading);
     details.appendChild(linkedJuniors);
   }
 
-  const actions = document.createElement("div");
+  const actions =
+    document.createElement("div");
+
   actions.className = "detail-actions";
 
-  const editButton = document.createElement("button");
+  const editButton =
+    document.createElement("button");
+
   editButton.type = "button";
   editButton.className = "primary-button";
   editButton.textContent = "Edit Guardian";
@@ -382,7 +463,8 @@ function showGuardianDetails(guardian) {
 }
 
 function showGuardianEditForm(guardian) {
-  const details = document.querySelector("#guardian-details");
+  const details =
+    document.querySelector("#guardian-details");
 
   if (!details) {
     return;
@@ -390,50 +472,73 @@ function showGuardianEditForm(guardian) {
 
   details.replaceChildren();
 
-  const heading = document.createElement("h3");
+  const heading =
+    document.createElement("h3");
+
   heading.textContent = "Edit Guardian";
 
-  const form = document.createElement("form");
+  const form =
+    document.createElement("form");
+
   form.className = "edit-guardian-form";
 
-  const fieldGrid = document.createElement("div");
+  const fieldGrid =
+    document.createElement("div");
+
   fieldGrid.className = "field-grid";
 
-  const field = document.createElement("div");
+  const field =
+    document.createElement("div");
+
   field.className = "field";
 
-  const label = document.createElement("label");
+  const label =
+    document.createElement("label");
+
   label.textContent = "Mobile";
   label.setAttribute("for", "edit-mobile");
 
-  const input = document.createElement("input");
+  const input =
+    document.createElement("input");
+
   input.id = "edit-mobile";
   input.type = "tel";
-  input.value = guardian.mobile;
+  input.value = guardian.phone;
   input.required = true;
 
   field.appendChild(label);
   field.appendChild(input);
+
   fieldGrid.appendChild(field);
 
-  const message = document.createElement("p");
+  const message =
+    document.createElement("p");
+
   message.className = "form-message";
 
-  const actions = document.createElement("div");
+  const actions =
+    document.createElement("div");
+
   actions.className = "detail-actions";
 
-  const saveButton = document.createElement("button");
+  const saveButton =
+    document.createElement("button");
+
   saveButton.type = "submit";
   saveButton.className = "primary-button";
   saveButton.textContent = "Save Changes";
 
-  const cancelButton = document.createElement("button");
+  const cancelButton =
+    document.createElement("button");
+
   cancelButton.type = "button";
   cancelButton.className = "secondary-button";
   cancelButton.textContent = "Cancel";
 
   cancelButton.addEventListener("click", function () {
-    showGuardianDetails(getGuardianById(guardian.guardianId));
+    showGuardianDetails(
+      getGuardianById(guardian.id)
+    );
   });
 
   actions.appendChild(saveButton);
@@ -451,18 +556,22 @@ function showGuardianEditForm(guardian) {
     }
 
     try {
-      const updatedGuardian = updateGuardian(
-        guardian.guardianId,
-        {
-          mobile: input.value
-        }
-      );
+      const updatedGuardian =
+        updateGuardian(
+          guardian.id,
+          {
+            phone: input.value
+          }
+        );
 
       showGuardianDetails(updatedGuardian);
 
     } catch (error) {
-      message.textContent = error.message;
-      message.className = "form-message error";
+      message.textContent =
+        error.message;
+
+      message.className =
+        "form-message error";
     }
   });
 
@@ -471,24 +580,53 @@ function showGuardianEditForm(guardian) {
 }
 
 function initialiseGuardianNavigation() {
-  document.querySelectorAll(".nav-group-toggle").forEach(function (toggle) {
-    toggle.addEventListener("click", function () {
-      const submenu = document.getElementById(toggle.getAttribute("aria-controls"));
-      const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+  document
+    .querySelectorAll(".nav-group-toggle")
+    .forEach(function (toggle) {
 
-      toggle.setAttribute("aria-expanded", String(!isExpanded));
-      if (submenu) {
-        submenu.hidden = isExpanded;
-      }
+      toggle.addEventListener(
+        "click",
+        function () {
+
+          const submenu =
+            document.getElementById(
+              toggle.getAttribute(
+                "aria-controls"
+              )
+            );
+
+          const isExpanded =
+            toggle.getAttribute(
+              "aria-expanded"
+            ) === "true";
+
+          toggle.setAttribute(
+            "aria-expanded",
+            String(!isExpanded)
+          );
+
+          if (submenu) {
+            submenu.hidden = isExpanded;
+          }
+        }
+      );
     });
-  });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  if (document.querySelector("#add-guardian-form, #link-guardian-form, #guardian-search")) {
-    initialiseGuardianNavigation();
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    if (
+      document.querySelector(
+        "#add-guardian-form, #link-guardian-form, #guardian-search"
+      )
+    ) {
+      initialiseGuardianNavigation();
+    }
+
+    initialiseGuardianPage();
+    initialiseGuardianLink();
+    initialiseGuardianSearchPage();
   }
-  initialiseGuardianPage();
-  initialiseGuardianLink();
-  initialiseGuardianSearchPage();
-});
+);
