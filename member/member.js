@@ -5,8 +5,10 @@ function getAllMembers() {
 }
 
 function getMemberById(memberId) {
+  const id = String(memberId || "").trim();
+
   return getAllMembers().find(function (member) {
-    return member.memberId === Number(memberId);
+    return member.id === id;
   }) || null;
 }
 
@@ -78,12 +80,13 @@ function addMember(memberData) {
     throw new Error("Enter a valid email address or leave the email field blank.");
   }
 
-  const nextId = Math.max.apply(null, existingMembers.map(function (member) {
-    return member.memberId;
-  }).concat([0])) + 1;
+  const nextNumber = existingMembers.reduce(function (max, member) {
+    const match = String(member.id || "").match(/^M(\d+)$/);
+    return match ? Math.max(max, Number(match[1])) : max;
+  }, 0) + 1;
 
   const member = {
-    memberId: nextId,
+    id: "M" + String(nextNumber).padStart(3, "0"),
     firstName: String(memberData.firstName || "").trim(),
     lastName: String(memberData.lastName || "").trim(),
     dateOfBirth: dateOfBirth,
@@ -98,14 +101,15 @@ function addMember(memberData) {
     throw new Error("Member information could not be saved.");
   }
 
-  return member.memberId;
+  return member.id;
 }
 
 function updateMember(memberId, updatedFields) {
   const allowedFields = ["firstName", "lastName", "dateOfBirth", "gender", "phone", "email", "status"];
   const members = getAllMembers();
+  const id = String(memberId || "").trim();
   const memberIndex = members.findIndex(function (member) {
-    return member.memberId === Number(memberId);
+    return member.id === id;
   });
 
   if (memberIndex === -1) {
@@ -238,7 +242,7 @@ function createRegistrationHistory(member) {
   heading.textContent = "Registration History";
   history.appendChild(heading);
 
-  const registrations = getRegistrationsByMember(member.memberId).slice().sort(function (first, second) {
+  const registrations = getRegistrationsByMember(member.id).slice().sort(function (first, second) {
     return String(second.season).localeCompare(String(first.season), undefined, {
       numeric: true
     });
@@ -302,7 +306,7 @@ function showMemberDetails(member, notice) {
   title.textContent = member.firstName + " " + member.lastName;
   const id = document.createElement("p");
   id.className = "detail-id";
-  id.textContent = "Member ID #" + member.memberId;
+  id.textContent = "Member ID #" + member.id;
   const contact = document.createElement("dl");
   const detailsToShow = [
     ["Date of birth", formatDate(member.dateOfBirth)],
@@ -313,12 +317,12 @@ function showMemberDetails(member, notice) {
   ];
 
   const guardianLinks = getStore("guardianMembers").filter(function (link) {
-    return link.memberId === member.memberId;
+    return link.memberId === member.id;
   });
 
   guardianLinks.forEach(function (link) {
     const guardian = getStore("guardians").find(function (item) {
-      return item.guardianId === link.guardianId;
+      return item.id === link.guardianId;
     });
 
     if (guardian) {
@@ -329,7 +333,7 @@ function showMemberDetails(member, notice) {
 
       detailsToShow.push([
         "Guardian Mobile",
-        guardian.mobile
+        guardian.phone
       ]);
     }
   });
@@ -361,9 +365,9 @@ function showMemberDetails(member, notice) {
     deactivateButton.className = "danger-button";
     deactivateButton.textContent = "Deactivate member";
     deactivateButton.addEventListener("click", function () {
-      if (deactivateMember(member.memberId)) {
+      if (deactivateMember(member.id)) {
         refreshMemberSearchResults();
-        showMemberDetails(getMemberById(member.memberId), "Member marked as inactive.");
+        showMemberDetails(getMemberById(member.id), "Member marked as inactive.");
       }
     });
     actions.appendChild(deactivateButton);
@@ -390,7 +394,7 @@ function showMemberEditForm(member) {
   title.textContent = "Edit member";
   const id = document.createElement("p");
   id.className = "detail-id";
-  id.textContent = "Member ID #" + member.memberId;
+  id.textContent = "Member ID #" + member.id;
   const form = document.createElement("form");
   form.className = "edit-member-form";
   form.innerHTML =
@@ -417,7 +421,7 @@ function showMemberEditForm(member) {
   form.elements.email.value = member.email || "";
   form.elements.dateOfBirth.max = new Date().toISOString().slice(0, 10);
   form.querySelector(".secondary-button").addEventListener("click", function () {
-    showMemberDetails(getMemberById(member.memberId));
+    showMemberDetails(getMemberById(member.id));
   });
 
   form.addEventListener("submit", function (event) {
@@ -426,7 +430,7 @@ function showMemberEditForm(member) {
       return;
     }
 
-    const updated = updateMember(member.memberId, {
+    const updated = updateMember(member.id, {
       firstName: form.elements.firstName.value,
       lastName: form.elements.lastName.value,
       dateOfBirth: form.elements.dateOfBirth.value,
@@ -443,7 +447,7 @@ function showMemberEditForm(member) {
     }
 
     refreshMemberSearchResults();
-    showMemberDetails(getMemberById(member.memberId), "Member changes saved.");
+    showMemberDetails(getMemberById(member.id), "Member changes saved.");
   });
 
   details.append(title, id, form);
