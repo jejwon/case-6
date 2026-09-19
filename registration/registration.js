@@ -1,27 +1,49 @@
 /* Season registration business functions. Load team/mockdata.js and data.js first. */
 
 function getRegistrationsByMember(memberId) {
+  const id = String(memberId || "").trim();
+
   return getStore("registrations").filter(function (registration) {
-    return registration.memberId === Number(memberId);
+    return registration.memberId === id;
   });
 }
 
 function getRegistrationById(registrationId) {
+  const id = String(registrationId || "").trim();
+
   return getStore("registrations").find(function (registration) {
-    return registration.registrationId === Number(registrationId);
+    return registration.id === id;
   }) || null;
 }
 
 function memberExists(memberId) {
+  const id = String(memberId || "").trim();
+
   return getStore("members").some(function (member) {
-    return member.memberId === Number(memberId);
+    return member.id === id;
   });
 }
 
 function getRegistrationMember(memberId) {
+  const id = String(memberId || "").trim();
+
   return getStore("members").find(function (member) {
-    return member.memberId === Number(memberId);
+    return member.id === id;
   }) || null;
+}
+
+function normaliseSeason(season) {
+  const parsedSeason = Number(String(season || "").trim());
+  return Number.isInteger(parsedSeason) && parsedSeason > 0 ? parsedSeason : null;
+}
+
+function nextRegistrationId(registrations) {
+  const nextNumber = registrations.reduce(function (max, registration) {
+    const match = String(registration.id || "").match(/^R(\d+)$/);
+    return match ? Math.max(max, Number(match[1])) : max;
+  }, 0) + 1;
+
+  return "R" + String(nextNumber).padStart(3, "0");
 }
 
 function calculateCurrentAge(dateOfBirth) {
@@ -90,6 +112,10 @@ function getAgeGroupValidationMessage(memberId) {
     return "Select a member before creating a registration.";
   }
 
+  if (member.status === "Inactive") {
+    return "Inactive members cannot be registered.";
+  }
+
   if (calculateCurrentAge(member.dateOfBirth) === null) {
     return "The selected member needs a valid date of birth before registration can be created.";
   }
@@ -102,42 +128,46 @@ function getAgeGroupValidationMessage(memberId) {
 }
 
 function createRegistration(memberId, season, ageGroup) {
-  const numericMemberId = Number(memberId);
-  const cleanSeason = String(season || "").trim();
+  const memberIdString = String(memberId || "").trim();
+  const cleanSeason = normaliseSeason(season);
   const registrations = getStore("registrations");
-  const generatedAgeGroup = getAutomaticAgeGroup(getRegistrationMember(numericMemberId));
+  const member = getRegistrationMember(memberIdString);
+  const generatedAgeGroup = getAutomaticAgeGroup(member);
 
-  if (!memberExists(numericMemberId) || !cleanSeason || !generatedAgeGroup) {
+  if (!memberExists(memberIdString) ||
+      !member ||
+      member.status === "Inactive" ||
+      cleanSeason === null ||
+      !generatedAgeGroup) {
     return null;
   }
 
   const alreadyRegistered = registrations.some(function (registration) {
-    return registration.memberId === numericMemberId && registration.season === cleanSeason;
+    return registration.memberId === memberIdString && registration.season === cleanSeason;
   });
 
   if (alreadyRegistered) {
     return null;
   }
 
-  const nextId = Math.max.apply(null, registrations.map(function (registration) {
-    return registration.registrationId;
-  }).concat([0])) + 1;
+  const registrationId = nextRegistrationId(registrations);
 
   registrations.push({
-    registrationId: nextId,
-    memberId: numericMemberId,
+    id: registrationId,
+    memberId: memberIdString,
     season: cleanSeason,
     ageGroup: generatedAgeGroup,
     status: "Started"
   });
 
-  return saveStore("registrations", registrations) ? nextId : null;
+  return saveStore("registrations", registrations) ? registrationId : null;
 }
 
 function updateRegistration(registrationId, updatedFields) {
   const registrations = getStore("registrations");
+  const id = String(registrationId || "").trim();
   const registrationIndex = registrations.findIndex(function (registration) {
-    return registration.registrationId === Number(registrationId);
+    return registration.id === id;
   });
 
   if (registrationIndex === -1) {
@@ -150,15 +180,15 @@ function updateRegistration(registrationId, updatedFields) {
   }
 
   const registration = registrations[registrationIndex];
-  const season = hasSeason ? String(updatedFields.season || "").trim() : registration.season;
+  const season = hasSeason ? normaliseSeason(updatedFields.season) : registration.season;
   const ageGroup = getAutomaticAgeGroup(getRegistrationMember(registration.memberId));
 
-  if (!season || !ageGroup) {
+  if (season === null || !ageGroup) {
     return false;
   }
 
   const wouldDuplicateSeason = registrations.some(function (item) {
-    return item.registrationId !== registration.registrationId &&
+    return item.id !== registration.id &&
       item.memberId === registration.memberId &&
       item.season === season;
   });
@@ -174,8 +204,9 @@ function updateRegistration(registrationId, updatedFields) {
 
 function withdrawRegistration(registrationId) {
   const registrations = getStore("registrations");
+  const id = String(registrationId || "").trim();
   const registration = registrations.find(function (item) {
-    return item.registrationId === Number(registrationId);
+    return item.id === id;
   });
 
   if (!registration) {
@@ -188,8 +219,9 @@ function withdrawRegistration(registrationId) {
 
 function completeRegistration(registrationId) {
   const registrations = getStore("registrations");
+  const id = String(registrationId || "").trim();
   const registration = registrations.find(function (item) {
-    return item.registrationId === Number(registrationId);
+    return item.id === id;
   });
 
   if (!registration) {
@@ -209,6 +241,10 @@ function completeRegistration(registrationId) {
   }
 
   const member = getRegistrationMember(registration.memberId);
+  if (member && member.status === "Inactive") {
+    return { success: false, reason: "Inactive members cannot complete registration." };
+  }
+
   const age = member ? calculateCurrentAge(member.dateOfBirth) : null;
 
   if (age === null) {
@@ -231,16 +267,24 @@ function completeRegistration(registrationId) {
 }
 
 function getRegistrationStatus(memberId, season) {
+  const memberIdString = String(memberId || "").trim();
+  const cleanSeason = normaliseSeason(season);
+  if (cleanSeason === null) {
+    return null;
+  }
+
   const registration = getStore("registrations").find(function (item) {
-    return item.memberId === Number(memberId) && item.season === String(season);
+    return item.memberId === memberIdString && item.season === cleanSeason;
   });
 
   return registration ? registration.status : null;
 }
 
 function getMemberName(memberId) {
+  const id = String(memberId || "").trim();
+
   const member = getStore("members").find(function (item) {
-    return item.memberId === Number(memberId);
+    return item.id === id;
   });
 
   return member ? member.firstName + " " + member.lastName : "Member #" + memberId;
@@ -285,7 +329,7 @@ function renderRegistrationList(selectedRegistrationId) {
     row.setAttribute("role", "button");
     row.setAttribute("aria-label", "View registration for " + getMemberName(registration.memberId));
 
-    if (registration.registrationId === Number(selectedRegistrationId)) {
+    if (registration.id === String(selectedRegistrationId || "").trim()) {
       row.className = "selected-row";
     }
 
@@ -303,8 +347,8 @@ function renderRegistrationList(selectedRegistrationId) {
     row.appendChild(statusCell);
 
     function selectRegistration() {
-      showRegistrationDetails(registration.registrationId);
-      renderRegistrationList(registration.registrationId);
+      showRegistrationDetails(registration.id);
+      renderRegistrationList(registration.id);
     }
 
     row.addEventListener("click", selectRegistration);
@@ -340,7 +384,7 @@ function showRegistrationDetails(registrationId, notice, isError) {
 
   const id = document.createElement("span");
   id.className = "badge";
-  id.textContent = "Registration ID #" + registration.registrationId;
+  id.textContent = "Registration ID #" + registration.id;
 
   const member = document.createElement("span");
   member.className = "badge";
@@ -367,19 +411,19 @@ function showRegistrationDetails(registrationId, notice, isError) {
       return;
     }
 
-    if (!updateRegistration(registration.registrationId, {
+    if (!updateRegistration(registration.id, {
       season: form.elements.season.value
     })) {
       const generatedAgeGroup = getAutomaticAgeGroup(getRegistrationMember(registration.memberId));
       const errorMessage = generatedAgeGroup ?
         "Registration changes could not be saved. A registration for this member and season may already exist." :
         getAgeGroupValidationMessage(registration.memberId);
-      showRegistrationDetails(registration.registrationId, errorMessage, true);
+      showRegistrationDetails(registration.id, errorMessage, true);
       return;
     }
 
-    showRegistrationDetails(registration.registrationId, "Registration changes saved.");
-    renderRegistrationList(registration.registrationId);
+    showRegistrationDetails(registration.id, "Registration changes saved.");
+    renderRegistrationList(registration.id);
   });
 
   const actions = form.querySelector(".action-buttons");
@@ -389,15 +433,15 @@ function showRegistrationDetails(registrationId, notice, isError) {
     completeButton.className = "primary-button";
     completeButton.textContent = "Complete Registration";
     completeButton.addEventListener("click", function () {
-      const result = completeRegistration(registration.registrationId);
+      const result = completeRegistration(registration.id);
       showRegistrationDetails(
-        registration.registrationId,
+        registration.id,
         result.success ? "Registration completed." : result.reason,
         !result.success
       );
 
       if (result.success) {
-        renderRegistrationList(registration.registrationId);
+        renderRegistrationList(registration.id);
       }
     });
     actions.prepend(completeButton);
@@ -409,9 +453,9 @@ function showRegistrationDetails(registrationId, notice, isError) {
     withdrawButton.className = "danger-button";
     withdrawButton.textContent = "Withdraw Registration";
     withdrawButton.addEventListener("click", function () {
-      if (withdrawRegistration(registration.registrationId)) {
-        showRegistrationDetails(registration.registrationId, "Registration withdrawn.");
-        renderRegistrationList(registration.registrationId);
+      if (withdrawRegistration(registration.id)) {
+        showRegistrationDetails(registration.id, "Registration withdrawn.");
+        renderRegistrationList(registration.id);
       }
     });
     actions.appendChild(withdrawButton);
@@ -433,10 +477,12 @@ function populateMemberOptions() {
     return;
   }
 
-  getStore("members").forEach(function (member) {
+  getStore("members").filter(function (member) {
+    return member.status === "Active";
+  }).forEach(function (member) {
     const option = document.createElement("option");
-    option.value = member.memberId;
-    option.textContent = member.firstName + " " + member.lastName + " (Member ID #" + member.memberId + ")";
+    option.value = member.id;
+    option.textContent = member.firstName + " " + member.lastName + " (Member ID #" + member.id + ")";
     select.appendChild(option);
   });
 }
@@ -457,7 +503,15 @@ function updateRegistrationAgeGroupField() {
     return false;
   }
 
-  const ageGroup = getAutomaticAgeGroup(getRegistrationMember(memberSelect.value));
+  const selectedMember = getRegistrationMember(memberSelect.value);
+  if (selectedMember && selectedMember.status === "Inactive") {
+    ageGroupInput.value = "";
+    message.textContent = getAgeGroupValidationMessage(memberSelect.value);
+    message.className = "form-message error";
+    return false;
+  }
+
+  const ageGroup = getAutomaticAgeGroup(selectedMember);
   ageGroupInput.value = ageGroup || "";
 
   if (!ageGroup) {
