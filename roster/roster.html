@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Warrigal Park FC | Team Roster</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* =========================================================
+       ROSTER PAGE ONLY
+       ========================================================= */
+
+    /* Team roster panel */
+
+    .roster-panel .panel-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .roster-panel .panel-heading > div:first-child {
+      flex: 1;
+    }
+
+    .roster-panel .panel-heading .eyebrow {
+      margin: 0 0 0.35rem;
+      padding: 0;
+      background: none;
+      font-size: 0.8rem;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .roster-panel .panel-heading h2 {
+      margin: 0;
+      line-height: 1.2;
+    }
+
+
+    /* Team selector */
+
+    .team-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      width: 205px;
+      flex-shrink: 0;
+    }
+
+    .team-selector label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #17324d;
+    }
+
+    .team-selector select {
+      width: 100%;
+      height: 44px;
+      padding: 0 0.75rem;
+      box-sizing: border-box;
+
+      border: 1px solid #c8d2dc;
+      border-radius: 6px;
+
+      background: #ffffff;
+      color: #17324d;
+
+      font-size: 0.95rem;
+    }
+
+
+    /* Selected team information */
+
+    .team-summary {
+      margin: 0 0 0.75rem;
+      color: #587086;
+      font-size: 0.9rem;
+    }
+
+
+    /* Roster content */
+
+    .roster-content {
+      min-height: 0;
+    }
+
+    .roster-content .empty-state {
+      margin: 0;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      color: #587086;
+    }
+
+
+    /* =========================================================
+       ADD PLAYER SECTION
+       ========================================================= */
+
+    .roster-management {
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+
+      background: #ffffff;
+      border: 1px solid #d9e0e7;
+      border-radius: 10px;
+    }
+
+    .roster-management .section-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .roster-management .eyebrow {
+      margin: 0 0 0.35rem;
+      padding: 0;
+
+      background: none;
+
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #0077b6;
+    }
+
+    .roster-management h2 {
+      margin: 0;
+
+      color: #17324d;
+      font-size: 1.45rem;
+      line-height: 1.2;
+    }
+
+
+    /* Add player form */
+
+    .roster-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      align-items: end;
+      gap: 1rem;
+    }
+
+    .roster-form .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .roster-form label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #17324d;
+    }
+
+    .roster-form select,
+    .roster-form input {
+      width: 100%;
+      height: 44px;
+      box-sizing: border-box;
+
+      padding: 0 0.9rem;
+
+      border: 1px solid #c8d2dc;
+      border-radius: 6px;
+
+      background: #ffffff;
+      color: #17324d;
+
+      font-size: 0.95rem;
+    }
+
+    .roster-form select:focus,
+    .roster-form input:focus {
+      outline: none;
+
+      border-color: #168fc4;
+
+      box-shadow:
+        0 0 0 2px rgba(22, 143, 196, 0.12);
+    }
+
+
+    /* Add player button */
+
+    .roster-form-actions {
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .roster-form-actions .primary-button {
+      height: 44px;
+      padding: 0 1.25rem;
+      white-space: nowrap;
+    }
+
+
+    /* Form message */
+
+    .roster-management .form-message {
+      margin: 0.75rem 0 0;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (max-width: 760px) {
+
+      .roster-panel .panel-heading {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+      }
+
+      .team-selector {
+        width: 100%;
+      }
+
+      .roster-form {
+        grid-template-columns: 1fr;
+      }
+
+      .roster-form-actions {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+
+
+<body>
+
+  <div class="app-shell">
+
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside class="sidebar" aria-label="Main navigation">
+
+      <a class="brand" href="../index.html">
+        WPFC<span>Admin</span>
+      </a>
+
+
+      <nav>
+
+        <!-- Dashboard -->
+
+        <a
+          class="nav-group-link"
+          href="../index.html"
+        >
+          Dashboard
+        </a>
+
+
+        <!-- Member Management -->
+
+        <button
+          class="nav-group-toggle"
+          type="button"
+          aria-expanded="true"
+          aria-controls="member-management-menu"
+        >
+          Member Management
+        </button>
+
+        <div
+          id="member-management-menu"
+          class="nav-submenu"
+        >
+          <a
+            class="nav-subitem"
+            href="../member/index.html"
+          >
+            Add New Member
+          </a>
+
+          <a
+            class="nav-subitem"
+            href="../member/search.html"
+          >
+            Search Members
+          </a>
+        </div>
+
+
+        <!-- Guardian Management -->
+
+        <button
+          class="nav-group-toggle"
+          type="button"
+          aria-expanded="true"
+          aria-controls="guardian-management-menu"
+        >
+          Guardian Management
+        </button>
+
+        <div
+          id="guardian-management-menu"
+          class="nav-submenu"
+        >
+          <a
+            class="nav-subitem"
+            href="../guardian/index.html"
+          >
+            Add Guardian
+          </a>
+
+          <a
+            class="nav-subitem"
+            href="../guardian/search.html"
+          >
+            Search Guardians
+          </a>
+        </div>
+
+
+        <!-- Registration Management -->
+
+        <button
+          class="nav-group-toggle"
+          type="button"
+          aria-expanded="true"
+          aria-controls="registration-management-menu"
+        >
+          Registration Management
+        </button>
+
+        <div
+          id="registration-management-menu"
+          class="nav-submenu"
+        >
+          <a
+            class="nav-subitem"
+            href="../registration/index.html"
+          >
+            Manage Registrations
+          </a>
+        </div>
+
+
+        <!-- Team Management -->
+
+        <button
+          class="nav-group-toggle"
+          type="button"
+          aria-expanded="true"
+          aria-controls="team-management-menu"
+        >
+          Team Management
+        </button>
+
+        <div
+          id="team-management-menu"
+          class="nav-submenu"
+        >
+          <a
+            class="nav-subitem"
+            href="../team/team.html"
+          >
+            Manage Teams
+          </a>
+        </div>
+
+
+        <!-- Roster Management -->
+
+        <button
+          class="nav-group-toggle"
+          type="button"
+          aria-expanded="true"
+          aria-controls="roster-management-menu"
+        >
+          Roster Management
+        </button>
+
+        <div
+          id="roster-management-menu"
+          class="nav-submenu"
+        >
+          <a
+            class="nav-subitem active"
+            href="roster.html"
+            aria-current="page"
+          >
+            Manage Roster
+          </a>
+        </div>
+
+      </nav>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
+    <main
+      id="top"
+      class="main-content"
+    >
+
+
+      <!-- Top bar -->
+
+      <header class="topbar">
+
+        <div>
+
+          <p class="eyebrow">
+            Warrigal Park Football Club
+          </p>
+
+          <h1>
+           Manage Roster
+          </h1>
+
+        </div>
+
+        <div class="user-label">
+          Junior Coordinator
+        </div>
+
+      </header>
+
+
+      <!-- ===================================================
+           TEAM ROSTER
+           =================================================== -->
+
+      <section
+        class="management-section roster-management"
+        aria-labelledby="roster-heading"
+      >
+
+        <div class="panel-heading">
+
+          <div>
+
+            <p class="eyebrow">
+              TEAM MANAGEMENT
+            </p>
+
+            <h2 id="roster-heading">
+              Team roster
+            </h2>
+
+          </div>
+
+
+          <div class="team-selector">
+
+            <label for="team-select">
+              Team
+            </label>
+
+            <select id="team-select">
+
+              <option value="">
+                Select a team
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- Selected team information -->
+
+        <p
+          id="team-summary"
+          class="team-summary"
+        ></p>
+
+
+        <!-- Roster message -->
+
+        <p
+          id="roster-message"
+          class="form-message"
+          aria-live="polite"
+        ></p>
+
+
+        <!-- Roster list -->
+
+        <div
+          id="roster-content"
+          class="roster-content"
+        ></div>
+
+      </section>
+
+
+      <!-- ===================================================
+           ADD PLAYER
+           =================================================== -->
+
+      <section
+        class="management-section roster-management"
+      >
+
+        <div class="section-header">
+
+          <div>
+
+            <p class="eyebrow">
+              ROSTER MANAGEMENT
+            </p>
+
+            <h2>
+              Add registered player
+            </h2>
+
+          </div>
+
+        </div>
+
+
+        <form
+          id="add-player-form"
+          class="roster-form"
+        >
+
+          <!-- Registered player -->
+
+          <div class="form-group">
+
+            <label for="player-select">
+              Registered player
+            </label>
+
+            <select
+              id="player-select"
+              name="player"
+            >
+
+              <option value="">
+                Select a registered player
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- Search -->
+
+          <div class="form-group">
+
+            <label for="player-filter">
+              Search player
+            </label>
+
+            <input
+              type="text"
+              id="player-filter"
+              placeholder="Search by name"
+            >
+
+          </div>
+
+
+          <!-- Add button -->
+
+          <div class="roster-form-actions">
+
+            <button
+              type="submit"
+              class="primary-button"
+            >
+              Add player
+            </button>
+
+          </div>
+
+        </form>
+
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <!-- =======================================================
+       JAVASCRIPT
+       ======================================================= -->
+
+  <script src="../team/mockdata.js"></script>
+  <script src="../data.js"></script>
+  <script src="roster.js"></script>
+
+</body>
+
+</html>
